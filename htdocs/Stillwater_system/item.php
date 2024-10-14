@@ -39,6 +39,9 @@
         .nav-menu li {
             float: left;
         }
+        .nav-menu .User {
+            float: right;
+        }
         .nav-menu li a {
             color: white;
             text-decoration: none;
@@ -108,6 +111,7 @@
         <li><a href="item.php" class="active" >Item</a></li>
         <li><a href="purchases.php">Purchases</a></li>
         <li><a href="sales.php">Sales</a></li>
+        <li class="User"><a href="user_side.php">Client Side</a></li>
 
     </ul>
 
