@@ -1,17 +1,5 @@
 <?php
     include ('db_connection.php');
-
-    function updateButton($Client_id) {
-        echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
-        Update
-        </button>';
-    }
-
-    function deleteButton($Client_id) {
-        echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
-        Delete
-        </button>';
-}
 ?>
 
 <!DOCTYPE html>
@@ -141,11 +129,20 @@
             <th>Actions</th>
         </tr>
         <?php
+
         // Query to select all clients from the database
-        $query = "SELECT * FROM Purchases, Item WHERE Purchases.Item_number = Item.Item_number, Client WHERE Purchases.Client_id = Client.Client_id";
+        $query = "SELECT * FROM Purchases
+                INNER JOIN Item ON Purchases.Item_number = Item.Item_number 
+                INNER JOIN Client ON Item.Client_id = Client.Client_id";
         $result = mysqli_query($conn, $query);
+
+        if (!$result) {
+            die("Query failed: " . mysqli_error($conn));
+        }
+
         // Loop through each row in the result set and display it in the table
         while($row = mysqli_fetch_array($result)) {
+            
         ?>
         <tr class="outputs">
             <td><?php echo $row['Item_no']?></td>
@@ -153,12 +150,6 @@
             <td><?php echo $row['Purchase_cost']; ?></td>
             <td><?php echo $row['Date_purchased']; ?></td>
             <td><?php echo $row['Condition_at_purchased']; ?></td>
-            <td>
-                <div class="button-container">
-                    <?php updateButton($row['Client_id']); ?>
-                    <?php deleteButton($row['Client_id']); ?>
-                </div>
-            </td>
         </tr>
         <?php
         }

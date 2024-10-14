@@ -142,6 +142,11 @@
         <?php
         $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id";
         $result = mysqli_query($conn, $query);
+
+        if (!$result) {
+            die("Query failed: " . mysqli_error($conn));
+        }
+
         while($row = mysqli_fetch_array($result)) {
 
         setlocale(LC_MONETARY, 'c', 'en-PH');
