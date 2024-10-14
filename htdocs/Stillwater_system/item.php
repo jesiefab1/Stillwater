@@ -116,7 +116,7 @@
     </ul>
 
         <div style="text-align: right; margin: 20px;">
-            <button onclick="window.location.href='insert.php'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            <button onclick="window.location.href='add_item.php'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
             Add
             </button>
         </div>

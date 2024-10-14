@@ -104,28 +104,10 @@
         <li class="User"><a href="user_side.php">Client Side</a></li>
     </ul>
 
-    <!-- Button to add a new client -->
-    <div style="text-align: right; margin: 20px;">
-        <button onclick="window.location.href='insert.php'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
-        Add
-        </button>
-    </div>
-    <script>
-        // JavaScript to add hover effects to the add button
-        document.querySelector('button').addEventListener('mouseover', function() {
-            this.style.backgroundColor = '#45a049';
-            this.style.transform = 'scale(1.05)';
-        });
-        document.querySelector('button').addEventListener('mouseout', function() {
-            this.style.backgroundColor = '#4CAF50';
-            this.style.transform = 'scale(1)';
-        });
-    </script>
-
     <!-- Table to display client data -->
     <table class="Display_table">
         <tr>
-            <th>Item number</th>
+            <th>Item Name</th>
             <th>Client id</th>
             <th>Purchase Cost</th>
             <th>Date Purchased</th>
@@ -135,7 +117,7 @@
 
         // Query to select all clients from the database
         $query = "SELECT * FROM Purchases
-                INNER JOIN Item ON Purchases.Item_number = Item.Item_number 
+                INNER JOIN Item ON Purchases.Item_name = Item.Item_name 
                 INNER JOIN Client ON Purchases.Client_id = Client.Client_id";
         $result = mysqli_query($conn, $query);
 
@@ -148,7 +130,7 @@
             
         ?>
         <tr class="outputs">
-            <td><?php echo $row['Item_no']?></td>
+            <td><?php echo $row['Item_name']?></td>
             <td><?php echo $row['Client_id']; ?></td>
             <td><?php echo $row['Purchase_cost']; ?></td>
             <td><?php echo $row['Date_purchased']; ?></td>

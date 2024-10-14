@@ -123,7 +123,7 @@
 <body>
 
     <div class="Back">
-        <button onclick="window.location.href='insert.php'">Back</button>
+        <button onclick="window.location.href='item.php'">Back</button>
     </div>
 
     <div class="container">

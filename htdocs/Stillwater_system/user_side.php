@@ -26,9 +26,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .nav-menu li {
-            float: left;
-        }
-        .nav-menu .User {
             float: right;
         }
         .nav-menu li a {
@@ -99,7 +96,9 @@
     <ul class="nav-menu">
         <!-- Temporary -->
         <li><a href="client.php">Administrator Side</a></li>
-        <li class="User"><a href="user_side.php" class="active">Client Side</a></li>
+        <li><a href="user_side.php" class="active">Client Side</a></li>
     </ul>
+
+
 </body>
 </html>
