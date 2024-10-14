@@ -25,11 +25,11 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .nav-menu li {
-            float: left;
-        }
         .nav-menu .User {
             float: right;
+        }
+        .nav-menu li {
+            float: left;
         }
         .nav-menu li a {
             color: white;
@@ -97,48 +97,14 @@
 <body>
     <!-- Navigation menu -->
     <ul class="nav-menu">
-        <li><a href="client.php">Client</a></li>
-        <li><a href="item.php">Item</a></li>
-        <li><a href="purchases.php" class="active">Purchases</a></li>
-        <li><a href="sales.php">Sales</a></li>
-        <li class="User"><a href="buy.php">Client Side</a></li>
+        <li><a href="buy.php">Buy</a></li>
+        <li><a href="sell.php" class="active">Sell</a></li>
+
+        <!-- Temporary -->
+        <li class="User"><a href="client.php">Administrator Side</a></li>
     </ul>
 
-    <!-- Table to display client data -->
-    <table class="Display_table">
-        <tr>
-            <th>Item Name</th>
-            <th>Client id</th>
-            <th>Purchase Cost</th>
-            <th>Date Purchased</th>
-            <th>Condition at Purchased</th>
-        </tr>
-        <?php
 
-        // Query to select all clients from the database
-        $query = "SELECT * FROM Purchases
-                INNER JOIN Item ON Purchases.Item_name = Item.Item_name 
-                INNER JOIN Client ON Purchases.Client_id = Client.Client_id";
-        $result = mysqli_query($conn, $query);
 
-        if (!$result) {
-            die("Query failed: " . mysqli_error($conn));
-        }
-
-        // Loop through each row in the result set and display it in the table
-        while($row = mysqli_fetch_array($result)) {
-            
-        ?>
-        <tr class="outputs">
-            <td><?php echo $row['Item_name']?></td>
-            <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo $row['Purchase_cost']; ?></td>
-            <td><?php echo $row['Date_purchased']; ?></td>
-            <td><?php echo $row['Condition_at_purchased']; ?></td>
-        </tr>
-        <?php
-        }
-        ?>
-    </table>
 </body>
 </html>

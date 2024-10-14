@@ -25,8 +25,11 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .nav-menu li {
+        .nav-menu .User {
             float: right;
+        }
+        .nav-menu li {
+            float: left;
         }
         .nav-menu li a {
             color: white;
@@ -94,10 +97,13 @@
 <body>
     <!-- Navigation menu -->
     <ul class="nav-menu">
+        <li><a href="buy.php" class="active">Buy</a></li>
+        <li><a href="sell.php">Sell</a></li>
+
         <!-- Temporary -->
-        <li><a href="client.php">Administrator Side</a></li>
-        <li><a href="user_side.php" class="active">Client Side</a></li>
+        <li class="User"><a href="client.php">Administrator Side</a></li>
     </ul>
+
 
 
 </body>

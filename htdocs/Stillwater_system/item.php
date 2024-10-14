@@ -111,7 +111,7 @@
         <li><a href="item.php" class="active" >Item</a></li>
         <li><a href="purchases.php">Purchases</a></li>
         <li><a href="sales.php">Sales</a></li>
-        <li class="User"><a href="user_side.php">Client Side</a></li>
+        <li class="User"><a href="buy.php">Client Side</a></li>
 
     </ul>
 
