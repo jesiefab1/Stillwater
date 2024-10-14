@@ -99,6 +99,7 @@
     <ul class="nav-menu">
         <li><a href="buy.php">Buy</a></li>
         <li><a href="sell.php" class="active">Sell</a></li>
+        <li><a href="storage.php">Your Items</a></li>
 
         <!-- Temporary -->
         <li class="User"><a href="client.php">Administrator Side</a></li>
