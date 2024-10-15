@@ -1,21 +1,33 @@
 <?php
+    // Start the session
+    session_start();
+
     include ('db_connection.php');
+
+    // Check if the user is logged in
+    if (!isset($_SESSION['Client_id'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'log_in.php';</script>";
+        exit;
+    }
+
+    // Get the Client_id from the session
+    $client_id = $_SESSION['Client_id'];
 
     // Check if form is submitted
     if(isset($_POST['submit'])) {
         $Item_name = $_POST['Item_name'];
-        $Client_id = $_POST['Client_id'];
         $description = $_POST['description'];
         $asking_price = $_POST['asking_price'];
         $condition = $_POST['condition'];
     
         // Prepare and bind
-        $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`) VALUES ('$Client_id', '$Item_name', '$description', '$asking_price', '$condition')";
+        $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`) VALUES ('$client_id', '$Item_name', '$description', '$asking_price', '$condition')";
         $result = mysqli_query($conn, $query);
     
         // Check if the query is executed
         if ($result) {
-            $success = true;
+            echo "<script>alert('Item added successfully!');</script>";
         } else {
             echo "Error: " . $query . "<br>" . mysqli_error($conn);
         }
@@ -84,33 +96,56 @@
         .outputs td {
             text-align: center;
         }
-        /* Styling for the update and delete buttons */
-        .updateButton, .deleteButton {
-            padding: 10px 20px;
-            color: white;
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .client_id {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-right: 5px; /* Add some space between the buttons */
         }
-        .updateButton {
-            background-color: #4CAF50;
-        }
-        .deleteButton {
-            background-color: #f44336;
-        }
-        .updateButton:hover {
+        
+        input[type="submit"]:hover {
             background-color: #45a049;
-        }
-        .deleteButton:hover {
-            background-color: #e53935;
-        }
-        /* Container for the buttons */
-        .button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
     </style>
 </head>

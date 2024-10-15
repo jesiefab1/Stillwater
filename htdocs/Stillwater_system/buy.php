@@ -1,11 +1,18 @@
 <?php
+    // Start the session
+    session_start();
+
     include ('db_connection.php');
 
-    // Retrieve data sent from create_account.php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $email = $_POST['email'];
-        $password= $_POST['password'];
-    }    
+    // Check if the user is logged in
+    if (!isset($_SESSION['Client_id'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'log_in.php';</script>";
+        exit;
+    } 
+    
+    // Get the Client_id from the session
+    $client_id = $_SESSION['Client_id'];
 ?>
 
 <!DOCTYPE html>

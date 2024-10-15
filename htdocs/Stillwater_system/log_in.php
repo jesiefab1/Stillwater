@@ -1,31 +1,34 @@
 <?php
+    // Start the session
+    session_start();
+
     // Include the database connection file
     include ('db_connection.php');
 
-        // Check if the form is submitted
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // Get form data
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+    // Check if the form is submitted
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Get form data
+        $email = $_POST['email'];
+        $password = $_POST['password'];
 
-            // Prepare the SQL query to validate email and password
-            $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
-            $result = mysqli_query($conn, $query);
+        // Prepare the SQL query to validate email and password
+        $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
+        $result = mysqli_query($conn, $query);
 
-            // Check if the query returned any rows
-            if (mysqli_num_rows($result) > 0) {
-                // Email and password are valid
-                echo "<script>alert('Login successful.')</script>";
-                $success = true;
-            } else {
-                // Email or password is invalid
-                echo "<script>alert('Invalid Email or Password.')</script>";
-                $success = false;
-            }
-            
+        // Check if the query returned any rows
+        if (mysqli_num_rows($result) > 0) {
+            // Email and password are valid
+            $row = mysqli_fetch_assoc($result);
+            $_SESSION['Client_id'] = $row['Client_id']; // Store Client_id in session
+            echo "<script>alert('Login successful.')</script>";
+            $success = true;
+        } else {
+            // Email or password is invalid
+            echo "<script>alert('Invalid Email or Password.')</script>";
+            $success = false;
         }
-
-
+        
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
