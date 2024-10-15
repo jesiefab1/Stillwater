@@ -39,8 +39,7 @@
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
-            alert("Client added successfully!");
-            window.location.href = "client.php";
+            window.location.href = "buy.php";
         };
         <?php endif; ?>
 
@@ -80,6 +79,20 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+        }
+        .button-wrapper {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .button-wrapper > button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 100px;
+            border: none;
         }
         h1 {
             text-align: center;
@@ -136,7 +149,7 @@
 
     <div class="container">
         <h1>Create New Account</h1>
-        <form action="buy.php" method="POST">
+        <form action=" " method="POST">
             <label for="name">First Name:</label>
             <input type="text" name="first_name" required>
 
@@ -157,11 +170,11 @@
             
             <input type="submit" name="submit" value="Add Client">
         </form>
-
-        <button onclick="window.location.href='log_in.php'">
+        <div class="button-wrapper">
+            <button onclick="window.location.href='log_in.php'">
                 Log In
-        </button>
-
+            </button>
+        </div>
     </div>
 </body>
 </html>

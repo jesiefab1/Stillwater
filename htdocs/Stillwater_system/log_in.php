@@ -2,30 +2,30 @@
     // Include the database connection file
     include ('db_connection.php');
 
-    // Check if the form is submitted
-    if(isset($_POST['submit'])) {
+        // Check if the form is submitted
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Get form data
+            $email = $_POST['email'];
+            $password = $_POST['password'];
 
-        // Get form data
-        $first_name = $_POST['first_name'];
-        $lastname = $_POST['lastname'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $phone = $_POST['phone'];
-        $address = $_POST['address'];
+            // Prepare the SQL query to validate email and password
+            $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
+            $result = mysqli_query($conn, $query);
 
-        // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address) VALUES ('$first_name', '$lastname', '$email', '$password', '$phone', '$address')";
-        
-        // Execute the SQL query
-        $result = mysqli_query($conn, $query);
-
-        // Check if the query is executed
-        if ($result) {
-            $success = true;
-        } else {
-            echo "Error: " . $query . "<br>" . mysqli_error($conn);
+            // Check if the query returned any rows
+            if (mysqli_num_rows($result) > 0) {
+                // Email and password are valid
+                echo "<script>alert('Login successful.')</script>";
+                $success = true;
+            } else {
+                // Email or password is invalid
+                echo "<script>alert('Invalid Email or Password.')</script>";
+                $success = false;
+            }
+            
         }
-    }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,8 +39,7 @@
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
-            alert("Client added successfully!");
-            window.location.href = "client.php";
+            window.location.href = "buy.php";
         };
         <?php endif; ?>
 
@@ -86,7 +85,6 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-top: auto; /* Pushes the button to the bottom */
         }
         .button-wrapper > button {
             padding: 10px 20px;
@@ -151,7 +149,7 @@
 
     <div class="container">
         <h1>Log In</h1>
-        <form action="buy.php" method="POST">
+        <form action=" " method="POST">
 
             <label for="email">Email:</label>
             <input type="email" name="email" required>
