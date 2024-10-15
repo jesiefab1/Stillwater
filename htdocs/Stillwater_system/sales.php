@@ -101,7 +101,7 @@
         <li><a href="item.php">Item</a></li>
         <li><a href="purchases.php">Purchases</a></li>
         <li><a href="sales.php" class="active">Sales</a></li>
-        <li class="User"><a href="buy.php">Client Side</a></li>
+        <li class="User"><a href="create_account.php">Client Side</a></li>
     </ul>
 
     <!-- Table to display client data -->

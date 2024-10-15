@@ -9,11 +9,12 @@
         $first_name = $_POST['first_name'];
         $lastname = $_POST['lastname'];
         $email = $_POST['email'];
+        $password = $_POST['password'];
         $phone = $_POST['phone'];
         $address = $_POST['address'];
 
         // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Phone_number, Address) VALUES ('$first_name', '$lastname', '$email', '$phone', '$address')";
+        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address) VALUES ('$first_name', '$lastname', '$email', '$password', '$phone', '$address')";
         
         // Execute the SQL query
         $result = mysqli_query($conn, $query);
@@ -80,6 +81,21 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .button-wrapper {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: auto; /* Pushes the button to the bottom */
+        }
+        .button-wrapper > button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 100px;
+            border: none;
+        }
         h1 {
             text-align: center;
             color: #333;
@@ -121,29 +137,35 @@
         <button onclick="window.location.href='client.php'">Back</button>
     </div>
 
-    <div class="container">
-        <h1>Add New Client</h1>
-        <form action="" method="POST">
-            <label for="name">First Name:</label>
-            <input type="text" name="first_name" required>
+    <script>
+        // JavaScript to add hover effects to the add button
+        document.querySelector('button').addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#45a049';
+            this.style.transform = 'scale(1.05)';
+        });
+        document.querySelector('button').addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#4CAF50';
+            this.style.transform = 'scale(1)';
+        });
+    </script>
 
-            <label for="name">Last Name:</label>
-            <input type="text"  name="lastname" required>
-            
+    <div class="container">
+        <h1>Log In</h1>
+        <form action="buy.php" method="POST">
+
             <label for="email">Email:</label>
             <input type="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" name="password" required>
-            
-            <label for="phone">Phone:</label>
-            <input type="text" name="phone" required>
-            
-            <label for="address">Address:</label>
-            <input type="text" name="address" required>
-            
-            <input type="submit" name="submit" value="Add Client">
+
+            <input type="submit" name="submit" value="Enter Account">
         </form>
+        <div class="button-wrapper">
+            <button onclick="window.location.href='create_account.php'">
+                Create Account
+            </button>
+        </div>
     </div>
 </body>
 </html>

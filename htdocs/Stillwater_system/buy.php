@@ -1,5 +1,11 @@
 <?php
     include ('db_connection.php');
+
+    // Retrieve data sent from create_account.php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $email = $_POST['email'];
+        $password= $_POST['password'];
+    }    
 ?>
 
 <!DOCTYPE html>

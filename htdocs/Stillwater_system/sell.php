@@ -1,5 +1,25 @@
 <?php
     include ('db_connection.php');
+
+    // Check if form is submitted
+    if(isset($_POST['submit'])) {
+        $Item_name = $_POST['Item_name'];
+        $Client_id = $_POST['Client_id'];
+        $description = $_POST['description'];
+        $asking_price = $_POST['asking_price'];
+        $condition = $_POST['condition'];
+    
+        // Prepare and bind
+        $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`) VALUES ('$Client_id', '$Item_name', '$description', '$asking_price', '$condition')";
+        $result = mysqli_query($conn, $query);
+    
+        // Check if the query is executed
+        if ($result) {
+            $success = true;
+        } else {
+            echo "Error: " . $query . "<br>" . mysqli_error($conn);
+        }
+    }    
 ?>
 
 <!DOCTYPE html>
@@ -105,7 +125,24 @@
         <li class="User"><a href="client.php">Administrator Side</a></li>
     </ul>
 
-
+    <div class="container">
+        <h2>Sell an Item</h2>
+        <form method="POST" action="">
+            <label for="item_name">Item Name:</label>
+            <input type="text" name="Item_name" required>
+            
+            <label for="description">Description:</label>
+            <input type="text" name="description" required></input>
+            
+            <label for="asking_price">Asking Price:</label>
+            <input type="number" name="asking_price" step="0.01" required>
+            
+            <label for="condition">Condition:</label>
+            <input type="text" name="condition" required>
+            
+            <input type="submit" name="submit" value="Sell Item">
+        </form>
+    </div>
 
 </body>
 </html>
