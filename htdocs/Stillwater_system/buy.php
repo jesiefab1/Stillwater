@@ -14,9 +14,9 @@
     // Get the Client_id from the session
     $client_id = $_SESSION['Client_id'];
 
-    function buyButton($Item_number, $Client_id) {
-        echo '<button onclick="window.location.href=\'order.php?Item_number=' . $Item_number . '&Client_id=' . $Client_id . '\'" class="buyButton">
-        Buy
+    function moreButton($Item_number, $Client_id) {
+        echo '<button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="moreButton">
+        More
         </button>';
     }
 ?>
@@ -88,7 +88,7 @@
         .item-card p {
             margin: 5px 0;
         }
-        .buyButton {
+        .moreButton {
             padding: 10px 20px;
             color: white;
             border: none;
@@ -97,10 +97,20 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
             background-color: #4CAF50;
         }
-        .buyButton:hover {
+        .moreButton:hover {
             background-color: #45a049;
         }
     </style>
+    <script>
+        function openOrderPopup(Item_number, Client_id) {
+            var url = 'order.php?Item_number=' + Item_number + '&Client_id=' + Client_id;
+            var width = 600;
+            var height = 600;
+            var left = (screen.width - width) / 2;
+            var top = (screen.height - height) / 2;
+            window.open(url, 'OrderPopup', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left);
+        }
+    </script>
 </head>
 <body>
     <ul class="nav-menu">
@@ -126,9 +136,7 @@
             <h3><?php echo $row['Item_name']; ?></h3>
             <p><strong>Description:</strong> <?php echo $row['Item_description']; ?></p>
             <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'], 2); ?></p>
-            <p><strong>Condition:</strong> <?php echo $row['Condition']; ?></p>
-            <p><strong>Comments:</strong> <?php echo $row['Comments']; ?></p>
-            <?php buyButton($row['Item_number'], $row['Client_id']); ?>
+            <?php moreButton($row['Item_number'], $row['Client_id']); ?>
         </div>
 
         <?php

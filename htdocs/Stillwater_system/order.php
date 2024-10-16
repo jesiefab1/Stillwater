@@ -1,29 +1,42 @@
 <?php
     include ('db_connection.php');
 
-    // Include the database connection file
-    include('db_connection.php');
-
     // Start the session
     session_start();
 
     // Get the client_id from the session
     $client_id = $_SESSION['Client_id']; 
 
-    // Check if Client_id is set in the URL
-if (isset($_GET['Item_number'], $_GET['Client_id'])) {
-    $Item_number = $_GET['Item_number'];
-    $Client_id = $_GET['Client_id'];
+    $client_name_query = "SELECT First_name, Lastname FROM Client WHERE Client_id = '$client_id'";
+    $client_result = mysqli_query($conn, $client_name_query);
+    $client_row = mysqli_fetch_assoc($client_result);
     
-    // Corrected SQL query to join the Item and Client tables
-    $query = "SELECT Item.*, Client.First_name, Client.Lastname 
-              FROM Item 
-              JOIN Client ON Item.Client_id = Client.Client_id 
-              WHERE Item.Item_number = '$Item_number' AND Client.Client_id = '$Client_id'";
-    $result = mysqli_query($conn, $query);
+    // Check if Client_id is set in the URL
+    if (isset($_GET['Item_number'], $_GET['Client_id'])) {
+        $Item_number = $_GET['Item_number'];
+        $Client_id = $_GET['Client_id'];
+        
+        // Corrected SQL query to join the Item and Client tables
+        $query = "SELECT Item.*, Client.First_name, Client.Lastname
+                  FROM Item 
+                  JOIN Client ON Item.Client_id = Client.Client_id 
+                  WHERE Item_number = '$Item_number' AND Client.Client_id = '$Client_id'";
+        $result = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($result);
+    }
 
-
-}
+    // Handle comment submission
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment'])) {
+        $comment = mysqli_real_escape_string($conn, $_POST['comment']);
+        $client_name = $client_row['First_name'] . ' ' . $client_row['Lastname'];
+        $full_comment = $client_name . ': ' . $comment;
+        $query = "UPDATE Item SET Comments = CONCAT(COALESCE(Comments, ''), '\n', '$full_comment') WHERE Item_number = '$Item_number'";
+        mysqli_query($conn, $query);
+        
+        // Refresh the page to see the new comment
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -31,110 +44,126 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navigation Menu</title>
-    
+    <title>Payment Form</title>
     <style>
         body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
         }
-        .wrapper {
-            width: 50%;
+        .item-card {
+            background: #fff;
             padding: 20px;
-            background-color: #fff;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
         }
-        span {
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 20px;
+        .item-card h3 {
+            margin-top: 0;
+            color: #333;
         }
-        .Back {
-        text-align: right;
+        .item-card p {
+            margin: 10px 0;
+            color: #555;
         }
-        .Back > button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 16px 8px;
-            border: none;
-            cursor: pointer;
-            width: 100px;
+        .comment-form {
+            margin-top: 20px;
+        }
+        .comment-form textarea {
+            width: 96%;
+            padding: 10px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: vertical;
         }
-        .vl {
-            border-left: 2px solid #333;
-            height: 90%;
+        .comment-form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .comment-form button:hover {
+            background-color: #218838;
+        }
+        .buy-button-container {
             position: absolute;
-            left: 40%;
-            margin-left: -3px;
-            top: 5%;
+            top: 20px;
+            right: 20px;
         }
-        .commission-wrapper {
-            position: absolute; left: 45%; top: 5%;
-
+        .buy-button-container button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .buy-button-container button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="Back">
-        <button onclick="window.location.href='buy.php'">Back</button>
+
+<div class="item-card">
+    <div class="buy-button-container">
+        <form method="POST">
+            <button type="submit" name="buy">Buy</button>
+        </form>
     </div>
+    
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['buy'])) {
+        // Calculate the commission
+        $commission_rate = .4;
+        $commission = $row['Asking_price'] * $commission_rate / 100;
+        setlocale(LC_MONETARY, 'c', 'en-PH');
+    
+        $commission = number_format($commission, 2);
 
-    <div class="wrapper">
-        <h2>Item Info:</h2>
-        <?php
-            // Check if the query returned any rows
-            if (mysqli_num_rows($result) > 0) {
-                // Fetch the result row
-                $row = mysqli_fetch_assoc($result);
+        $Sales_tax = 0.12;
 
-                setlocale(LC_MONETARY, 'c', 'en-PH');
-                // Display the data (example)
-        ?>
-        <div class="item-info">
-            <div class="item-field">
-                <span class="label">Item Name:</span>
-                <span class="value"><?php echo htmlspecialchars($row['Item_name']); ?></span>
-            </div>
-            <div class="item-field">
-                <span class="label">Seller:</span>
-                <span class="value"><?php echo htmlspecialchars($row['First_name'] . ' ' . $row['Lastname']); ?></span>
-            </div>
-            <div class="item-field">
-                <span class="label">Description:</span>
-                <span class="value"><?php echo htmlspecialchars($row['Item_description']); ?></span>
-            </div>
-            <div class="item-field">
-                <span class="label">Asking Price:</span>
-                <span class="value"><?php echo htmlspecialchars(number_format($row['Asking_price'], 2)); ?></span>
-            </div>
-            <div class="item-field">
-                <span class="label">Condition:</span>
-                <span class="value"><?php echo htmlspecialchars($row['Condition']); ?></span>
-            </div>
+        // Get the current date and time
+        $date_time = date('Y-m-d H:i:s');
+    
+        // Prepare and bind
+        $query1 = "INSERT INTO Sales (Item_number, Client_id, Commission_paid, Selling_price, Sales_tax, Date_sold) VALUES ('$Item_number', '$Client_id', '$commission', '{$row['Asking_price']}', '$Sales_tax', '$date_time')";
+        $result1 = mysqli_query($conn, $query1);
 
-            <div class="vl"></div>
+        $query2 = "INSERT INTO Purchases (Item_number, Client_id, Purchase_cost, Date_purchased, Condition_at_purchased) VALUES ('$Item_number', '$client_id', '{$row['Asking_price']}', '$date_time', '{$row['Condition']}')";
+        $result2 = mysqli_query($conn, $query2);
 
-            <div class="commission-wrapper">
-                <label for="Commission">Commission:</label>
-                <input type="number" name="Commission" required min="<?php echo htmlspecialchars($row['Asking_price']); ?>">
-            </div>
-        </div>
-        <?php
-            } else {
-                echo "<p>No item found.</p>";
-            }
-        ?>
+        if ($result1 && $result2) {
+            echo '<p style="color: green;">Item purchased successfully!</p>';
+        } else {
+            echo '<p style="color: red;">Error purchasing item: ' . mysqli_error($conn) . '</p>';
+        }
+
+    }
+    ?>
+    <h3><?php echo htmlspecialchars($row['Item_name'] ?? ''); ?></h3>
+    <p><strong>Description:</strong> <?php echo htmlspecialchars($row['Item_description'] ?? ''); ?></p>
+    <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'] ?? 0, 2); ?></p>
+    <p><strong>Condition:</strong> <?php echo htmlspecialchars($row['Condition'] ?? ''); ?></p>
+    <p><strong>Comments:</strong> <?php echo nl2br(htmlspecialchars($row['Comments'] ?? '')); ?></p>
+
+    <div class="comment-form">
+        <form method="POST">
+            <textarea name="comment" rows="4" placeholder="Add your comment here..."></textarea>
+            <button type="submit">Submit Comment</button>
+        </form>
     </div>
+</div>
 
 </body>
 </html>

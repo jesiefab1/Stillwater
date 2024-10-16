@@ -1,5 +1,20 @@
 <?php
     include ('db_connection.php');
+
+    // Query to select all columns from Sales and the Item_name from Item
+    $query = "SELECT Sales.*, Item.Item_name FROM Sales 
+              JOIN Item ON Sales.Item_number = Item.Item_number";
+    $result = mysqli_query($conn, $query);
+
+    // Check if the query was successful
+    if (!$result) {
+        die("Query failed: " . mysqli_error($conn));
+    }
+
+    // Check if any rows were returned
+    if (mysqli_num_rows($result) == 0) {
+        echo "No data found.";
+    }
 ?>
 
 <!DOCTYPE html>
@@ -114,27 +129,18 @@
             <th>Sales Tax</th>
             <th>Date Sold</th>
         </tr>
+
         <?php
-
-        // Query to select all clients from the database
-        $query = "SELECT * FROM Sales
-                INNER JOIN Item ON Sales.Item_name = Item.Item_name 
-                INNER JOIN Client ON Sales.Client_id = Client.Client_id";
-        $result = mysqli_query($conn, $query);
-
-        if (!$result) {
-            die("Query failed: " . mysqli_error($conn));
-        }
-
         // Loop through each row in the result set and display it in the table
         while($row = mysqli_fetch_array($result)) {
+                setlocale(LC_MONETARY, 'c', 'en-PH');
             
         ?>
         <tr class="outputs">
-            <td><?php echo $row['Item_name']?></td>
+            <td><?php echo $row['Item_name'];?></td>
             <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo $row['Commission_paid']; ?></td>
-            <td><?php echo $row['Selling_price']; ?></td>
+            <td><?php echo number_format($row['Commission_paid']); ?></td>
+            <td><?php echo number_format($row['Selling_price']); ?></td>
             <td><?php echo $row['Sales_tax']; ?></td>
             <td><?php echo $row['Date_sold']; ?></td>
         </tr>

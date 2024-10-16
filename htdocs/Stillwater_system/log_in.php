@@ -19,7 +19,9 @@
         if (mysqli_num_rows($result) > 0) {
             // Email and password are valid
             $row = mysqli_fetch_assoc($result);
-            $_SESSION['Client_id'] = $row['Client_id']; // Store Client_id in session
+            $_SESSION['Client_id'] = $row['Client_id'];
+            $_SESSION['First_name'] = $row['First_name'];
+            $_SESSION['Lastname'] = $row['Lastname'];// Store Client_id in session
             echo "<script>alert('Login successful.')</script>";
             $success = true;
         } else {

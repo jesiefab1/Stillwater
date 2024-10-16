@@ -145,12 +145,16 @@
             if (mysqli_num_rows($result) > 0) {
                 // Loop through each row in the result set and display it in the cards
                 while ($row = mysqli_fetch_assoc($result)) {
+                    // Calculate the commission
+                    $commission_rate = .4;
+                    $commission = $row['Asking_price'] * $commission_rate / 100;
                     setlocale(LC_MONETARY, 'c', 'en-PH');
                     ?>
                     <div class="card">
                         <h3><?php echo $row['Item_name']; ?></h3>
                         <p><strong>Description:</strong> <?php echo $row['Item_description']; ?></p>
-                        <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'], 2); ?></p>
+                        <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'], 2)?></p>
+                        <p><strong>Tax Sales:</strong> <?php echo number_format($commission, 2); ?></p>
                         <p><strong>Condition:</strong> <?php echo $row['Condition']; ?></p>
                         <p><strong>Comments:</strong> <?php echo $row['Comments']; ?></p>
                         <div class="button-container">

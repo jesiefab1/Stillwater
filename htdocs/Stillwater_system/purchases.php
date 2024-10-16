@@ -116,9 +116,7 @@
         <?php
 
         // Query to select all clients from the database
-        $query = "SELECT * FROM Purchases
-                INNER JOIN Item ON Purchases.Item_name = Item.Item_name 
-                INNER JOIN Client ON Purchases.Client_id = Client.Client_id";
+        $query = "SELECT Purchases.* , Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -127,12 +125,13 @@
 
         // Loop through each row in the result set and display it in the table
         while($row = mysqli_fetch_array($result)) {
+                setlocale(LC_MONETARY, 'c', 'en-PH');            
             
         ?>
         <tr class="outputs">
             <td><?php echo $row['Item_name']?></td>
             <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo $row['Purchase_cost']; ?></td>
+            <td><?php echo number_format($row['Purchase_cost']); ?></td>
             <td><?php echo $row['Date_purchased']; ?></td>
             <td><?php echo $row['Condition_at_purchased']; ?></td>
         </tr>
