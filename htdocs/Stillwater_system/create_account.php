@@ -1,4 +1,6 @@
 <?php
+    session_start();
+
     // Include the database connection file
     include ('db_connection.php');
 
@@ -7,23 +9,32 @@
 
         // Get form data
         $first_name = $_POST['first_name'];
-        $lastname = $_POST['lastname'];
+        $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $password = $_POST['password'];
         $phone = $_POST['phone'];
         $address = $_POST['address'];
 
         // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address) VALUES ('$first_name', '$lastname', '$email', '$password', '$phone', '$address')";
+        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address) VALUES ('$first_name', '$last_name', '$email', '$password', '$phone', '$address')";
         
         // Execute the SQL query
-        $result = mysqli_query($conn, $query);
+        if ($result = mysqli_query($conn, $query)) {
+            $query1 = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
+            $result1 = mysqli_query($conn, $query1);
 
-        // Check if the query is executed
-        if ($result) {
-            $success = true;
+            if (mysqli_num_rows($result1) > 0) {
+                // Email and password are valid
+                $row = mysqli_fetch_assoc($result1);
+                $_SESSION['Client_id'] = $row['Client_id'];
+                $_SESSION['First_name'] = $row['First_name'];
+                $_SESSION['Lastname'] = $row['Lastname']; // Store Client_id in session
+                echo "<script>alert('Account created successfully.')</script>";
+                $success = true;
+            }
         } else {
-            echo "Error: " . $query . "<br>" . mysqli_error($conn);
+            echo "<script>alert('Error creating account.')</script>";
+            $success = false;
         }
     }
 ?>
@@ -35,18 +46,15 @@
     <title>Add Client</title>
 
     <script>
-
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
             window.location.href = "buy.php";
         };
         <?php endif; ?>
-
     </script>
 
     <style>
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -68,6 +76,11 @@
             cursor: pointer;
             width: 100px;
             border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .Back > button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
         }
         .container {
             background-color: #fff;
@@ -93,6 +106,11 @@
             color: white;
             border-radius: 100px;
             border: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .button-wrapper > button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
         }
         h1 {
             text-align: center;
@@ -125,27 +143,12 @@
         input[type="submit"]:hover {
             background-color: #218838;
         }
-        
     </style>
-
 </head>
 <body>
-
     <div class="Back">
         <button onclick="window.location.href='client.php'">Back</button>
     </div>
-
-    <script>
-        // JavaScript to add hover effects to the add button
-        document.querySelector('button').addEventListener('mouseover', function() {
-            this.style.backgroundColor = '#45a049';
-            this.style.transform = 'scale(1.05)';
-        });
-        document.querySelector('button').addEventListener('mouseout', function() {
-            this.style.backgroundColor = '#4CAF50';
-            this.style.transform = 'scale(1)';
-        });
-    </script>
 
     <div class="container">
         <h1>Create New Account</h1>
@@ -154,7 +157,7 @@
             <input type="text" name="first_name" required>
 
             <label for="name">Last Name:</label>
-            <input type="text"  name="lastname" required>
+            <input type="text" name="last_name" required>
             
             <label for="email">Email:</label>
             <input type="email" name="email" required>

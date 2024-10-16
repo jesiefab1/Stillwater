@@ -19,17 +19,16 @@
     $result = mysqli_query($conn, $query);
 
     function updateButton($Item_number) {
-        echo '<button onclick="window.location.href=\'update_item.php?Item_number=' . $Item_number . '\'" class="updateButton">
+        echo '<button onclick="window.location.href=\'client_update_item.php?Item_number=' . $Item_number . '\'" class="updateButton">
         Update
         </button>';
     }
     
     function deleteButton($Item_number) {
-        echo '<button onclick="window.location.href=\'delete_item.php?Item_number=' . $Item_number . '\'" class="deleteButton">
+        echo '<button onclick="window.location.href=\'client_delete_item.php?Item_number=' . $Item_number . '\'" class="deleteButton">
         Delete
         </button>';
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -73,6 +72,23 @@
         }
         .nav-menu li a.active {
             background-color: #4CAF50;
+        }
+        .logout-container {
+            margin-right: 20px;
+            text-align: right;
+            padding: 10px;
+        }
+        .logout {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            background-color: #4CAF50;
+        }
+        .logout:hover {
+            background-color: #45a049;
         }
         /* Styling for the card layout */
         .card-container {
@@ -136,8 +152,11 @@
         <li><a href="storage.php" class="active">Your Items</a></li>
 
         <!-- Temporary -->
-        <li class="User"><a href="client.php">Administrator Side</a></li>
+        <li class="User"><a href="log_out.php">Administrator Side</a></li>
     </ul>
+    <div class="logout-container">
+        <button onclick="window.location.href='log_out.php'" class="logout">Logout</button>
+    </div>
 
     <div class="card-container">
         <?php
@@ -165,7 +184,7 @@
                     <?php
                 }
             } else {
-                echo "<p>No items found for this client.</p>";
+                echo "<p>You have no Items.</p>";
             }
         ?>
     </div>

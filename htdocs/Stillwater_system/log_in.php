@@ -73,6 +73,11 @@
             cursor: pointer;
             width: 100px;
             border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .Back > button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
         }
         .container {
             background-color: #fff;
@@ -98,6 +103,11 @@
             color: white;
             border-radius: 100px;
             border: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .button-wrapper > button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
         }
         h1 {
             text-align: center;

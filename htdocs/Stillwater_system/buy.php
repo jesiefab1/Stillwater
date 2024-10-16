@@ -61,6 +61,23 @@
         .nav-menu li a.active {
             background-color: #4CAF50;
         }
+        .logout-container {
+            margin-right: 20px;
+            text-align: right;
+            padding: 10px;
+        }
+        .logout {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            background-color: #4CAF50;
+        }
+        .logout:hover {
+            background-color: #45a049;
+        }
         .item-container {
             display: flex;
             flex-wrap: wrap;
@@ -105,7 +122,7 @@
         function openOrderPopup(Item_number, Client_id) {
             var url = 'order.php?Item_number=' + Item_number + '&Client_id=' + Client_id;
             var width = 600;
-            var height = 600;
+            var height = 400;
             var left = (screen.width - width) / 2;
             var top = (screen.height - height) / 2;
             window.open(url, 'OrderPopup', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left);
@@ -117,8 +134,11 @@
         <li><a href="buy.php" class="active">Buy</a></li>
         <li><a href="sell.php">Sell</a></li>
         <li><a href="storage.php">Your Items</a></li>
-        <li class="User"><a href="client.php">Administrator Side</a></li>
+        <li class="User"><a href="log_out.php">Administrator Side</a></li>
     </ul>
+    <div class="logout-container">
+        <button onclick="window.location.href='log_out.php'" class="logout">Logout</button>
+    </div>
 
     <div class="item-container">
         <?php

@@ -1,8 +1,8 @@
 <?php
-    include ('db_connection.php');
-
     // Start the session
     session_start();
+
+    include ('db_connection.php');
 
     // Get the client_id from the session
     $client_id = $_SESSION['Client_id']; 
@@ -143,11 +143,7 @@
         $query2 = "INSERT INTO Purchases (Item_number, Client_id, Purchase_cost, Date_purchased, Condition_at_purchased) VALUES ('$Item_number', '$client_id', '{$row['Asking_price']}', '$date_time', '{$row['Condition']}')";
         $result2 = mysqli_query($conn, $query2);
 
-        if ($result1 && $result2) {
-            echo '<p style="color: green;">Item purchased successfully!</p>';
-        } else {
-            echo '<p style="color: red;">Error purchasing item: ' . mysqli_error($conn) . '</p>';
-        }
+        echo "<h3>Item purchased successfully!</h3>";
 
     }
     ?>
