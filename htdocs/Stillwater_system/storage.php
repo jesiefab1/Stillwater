@@ -13,6 +13,23 @@
 
     // Get the Client_id from the session
     $client_id = $_SESSION['Client_id'];
+
+    // Prepare the SQL query to fetch data for the specific client_id
+    $query = "SELECT * FROM Item WHERE Client_id = '$client_id'";
+    $result = mysqli_query($conn, $query);
+
+    function updateButton($Item_number) {
+        echo '<button onclick="window.location.href=\'update_item.php?Item_number=' . $Item_number . '\'" class="updateButton">
+        Update
+        </button>';
+    }
+    
+    function deleteButton($Item_number) {
+        echo '<button onclick="window.location.href=\'delete_item.php?Item_number=' . $Item_number . '\'" class="deleteButton">
+        Delete
+        </button>';
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -57,76 +74,57 @@
         .nav-menu li a.active {
             background-color: #4CAF50;
         }
-        /* Styling for the table displaying client data */
-        .Display_table {
-            margin: auto;
+        /* Styling for the card layout */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             margin-top: 40px;
-            margin-bottom: 40px;
-            width: 80%;
-            border-collapse: collapse;
         }
-        .Display_table th, .Display_table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        .Display_table th {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-        }
-        .outputs td {
-            text-align: center;
-        }
-        .container {
+        .card {
             background-color: #fff;
-            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            margin: 20px;
+            padding: 20px;
+            width: 300px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
         }
-        h2 {
-            text-align: center;
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin-top: 0;
             color: #333;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+        .card p {
             color: #555;
         }
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 95%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .button-container {
+            display: flex;
+            justify-content: space-between;
         }
-        .client_id {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-        input[type="submit"] {
-            width: 100%;
+        .updateButton, .deleteButton {
             padding: 10px;
-            background-color: #28a745;
             border: none;
             border-radius: 4px;
             color: #fff;
-            font-size: 16px;
             cursor: pointer;
         }
-        
-        input[type="submit"]:hover {
-            background-color: #45a049;
+        .updateButton {
+            background-color: #28a745;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .deleteButton {
+            background-color: #dc3545;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .updateButton:hover {
+            background-color: #218838;
+        }
+        .deleteButton:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -134,11 +132,39 @@
     <!-- Navigation menu -->
     <ul class="nav-menu">
         <li><a href="buy.php">Buy</a></li>
-        <li><a href="sell.php" class="active">Sell</a></li>
-        <li><a href="storage.php">Your Items</a></li>
+        <li><a href="sell.php">Sell</a></li>
+        <li><a href="storage.php" class="active">Your Items</a></li>
 
         <!-- Temporary -->
         <li class="User"><a href="client.php">Administrator Side</a></li>
     </ul>
+
+    <div class="card-container">
+        <?php
+            // Check if the query returned any rows
+            if (mysqli_num_rows($result) > 0) {
+                // Loop through each row in the result set and display it in the cards
+                while ($row = mysqli_fetch_assoc($result)) {
+                    setlocale(LC_MONETARY, 'c', 'en-PH');
+                    ?>
+                    <div class="card">
+                        <h3><?php echo $row['Item_name']; ?></h3>
+                        <p><strong>Description:</strong> <?php echo $row['Item_description']; ?></p>
+                        <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'], 2); ?></p>
+                        <p><strong>Condition:</strong> <?php echo $row['Condition']; ?></p>
+                        <p><strong>Comments:</strong> <?php echo $row['Comments']; ?></p>
+                        <div class="button-container">
+                            <?php updateButton($row['Item_number']); ?>
+                            <?php deleteButton($row['Item_number']); ?>
+                        </div>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo "<p>No items found for this client.</p>";
+            }
+        ?>
+    </div>
+
 </body>
 </html>

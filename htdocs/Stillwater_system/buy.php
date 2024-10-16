@@ -13,6 +13,12 @@
     
     // Get the Client_id from the session
     $client_id = $_SESSION['Client_id'];
+
+    function buyButton($Item_number, $Client_id) {
+        echo '<button onclick="window.location.href=\'order.php?Item_number=' . $Item_number . '&Client_id=' . $Client_id . '\'" class="buyButton">
+        Buy
+        </button>';
+    }
 ?>
 
 <!DOCTYPE html>
@@ -22,14 +28,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation Menu</title>
     <style>
-        /* Basic styling for the body */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
-        /* Styling for the navigation menu */
         .nav-menu {
             list-style-type: none;
             padding: 0;
@@ -57,68 +61,79 @@
         .nav-menu li a.active {
             background-color: #4CAF50;
         }
-        /* Styling for the table displaying client data */
-        .Display_table {
-            margin: auto;
-            margin-top: 40px;
-            margin-bottom: 40px;
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 40px auto;
             width: 80%;
-            border-collapse: collapse;
         }
-        .Display_table th, .Display_table td {
+        .item-card {
+            background-color: white;
             border: 1px solid #ddd;
-            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            width: calc(33.333% - 40px);
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
         }
-        .Display_table th {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
+        .item-card:hover {
+            transform: translateY(-5px);
         }
-        .outputs td {
-            text-align: center;
+        .item-card h3 {
+            margin-top: 0;
         }
-        /* Styling for the update and delete buttons */
-        .updateButton, .deleteButton {
+        .item-card p {
+            margin: 5px 0;
+        }
+        .buyButton {
             padding: 10px 20px;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-right: 5px; /* Add some space between the buttons */
-        }
-        .updateButton {
             background-color: #4CAF50;
         }
-        .deleteButton {
-            background-color: #f44336;
-        }
-        .updateButton:hover {
+        .buyButton:hover {
             background-color: #45a049;
-        }
-        .deleteButton:hover {
-            background-color: #e53935;
-        }
-        /* Container for the buttons */
-        .button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation menu -->
     <ul class="nav-menu">
         <li><a href="buy.php" class="active">Buy</a></li>
         <li><a href="sell.php">Sell</a></li>
         <li><a href="storage.php">Your Items</a></li>
-
-        <!-- Temporary -->
         <li class="User"><a href="client.php">Administrator Side</a></li>
     </ul>
 
+    <div class="item-container">
+        <?php
+        $query = "SELECT * FROM Item WHERE Client_id != '$client_id'";
+        $result = mysqli_query($conn, $query);
 
+        if (!$result) {
+            die("Query failed: " . mysqli_error($conn));
+        }
 
+        while($row = mysqli_fetch_array($result)) {
+        ?>
+
+        <div class="item-card">
+            <h3><?php echo $row['Item_name']; ?></h3>
+            <p><strong>Description:</strong> <?php echo $row['Item_description']; ?></p>
+            <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'], 2); ?></p>
+            <p><strong>Condition:</strong> <?php echo $row['Condition']; ?></p>
+            <p><strong>Comments:</strong> <?php echo $row['Comments']; ?></p>
+            <?php buyButton($row['Item_number'], $row['Client_id']); ?>
+        </div>
+
+        <?php
+        }
+        ?>
+    </div>
 </body>
 </html>
