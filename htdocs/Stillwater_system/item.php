@@ -120,6 +120,26 @@
             Add
             </button>
         </div>
+
+            <!-- Search form -->
+        <div style="text-align: center; margin: 20px;">
+            <form method="GET" action="item.php">
+                <input type="text" name="search" placeholder="Search...">
+                <select name="column">
+                    <option value="Item_number">Item No.</option>
+                    <option value="Client_id">Client ID</option>
+                    <option value="Item_name">Item Name</option>
+                    <option value="Item_description">Item Description</option>
+                    <option value="Asking_price">Asking Price</option>
+                    <option value="Condition">Condition</option>
+                    <option value="Comments">Comments</option>
+                </select>
+                <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+                Search
+                </button>
+            </form>
+        </div>    
+        
         <script>
             document.querySelector('button').addEventListener('mouseover', function() {
             this.style.backgroundColor = '#45a049';
@@ -144,7 +164,11 @@
 
         </tr>
         <?php
-        $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id";
+        // Get search parameters
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $column = isset($_GET['column']) ? $_GET['column'] : '';
+
+        $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id AND $column LIKE '%$search%'";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {

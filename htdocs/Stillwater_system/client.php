@@ -1,16 +1,16 @@
 <?php
-    include ('db_connection.php');
+include('db_connection.php');
 
-    function updateButton($Client_id) {
-        echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
-        Update
-        </button>';
-    }
+function updateButton($Client_id) {
+    echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
+    Update
+    </button>';
+}
 
-    function deleteButton($Client_id) {
-        echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
-        Delete
-        </button>';
+function deleteButton($Client_id) {
+    echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
+    Delete
+    </button>';
 }
 ?>
 
@@ -122,17 +122,24 @@
         Add
         </button>
     </div>
-    <script>
-        // JavaScript to add hover effects to the add button
-        document.querySelector('button').addEventListener('mouseover', function() {
-            this.style.backgroundColor = '#45a049';
-            this.style.transform = 'scale(1.05)';
-        });
-        document.querySelector('button').addEventListener('mouseout', function() {
-            this.style.backgroundColor = '#4CAF50';
-            this.style.transform = 'scale(1)';
-        });
-    </script>
+
+    <!-- Search form -->
+    <div style="text-align: center; margin: 20px;">
+        <form method="GET" action="client.php">
+            <input type="text" name="search" placeholder="Search...">
+            <select name="column">
+                <option value="Client_id">Client ID</option>
+                <option value="Lastname">Last Name</option>
+                <option value="First_name">First Name</option>
+                <option value="Phone_number">Phone Number</option>
+                <option value="Email">Email</option>
+                <option value="Address">Address</option>
+            </select>
+            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            Search
+            </button>
+        </form>
+    </div>
 
     <!-- Table to display client data -->
     <table class="Display_table">
@@ -145,9 +152,12 @@
             <th>Actions</th>
         </tr>
         <?php
+        // Get search parameters
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $column = isset($_GET['column']) ? $_GET['column'] : 'Lastname';
+
         // Query to select all clients from the database
-        $query = "SELECT * FROM Client
-        ORDER BY Lastname ASC";
+        $query = "SELECT * FROM Client WHERE $column LIKE '%$search%' ORDER BY Lastname ASC";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
