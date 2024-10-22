@@ -1,6 +1,10 @@
 <?php
     include ('db_connection.php');
 
+    // Get search parameters
+    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $column = isset($_GET['column']) ? $_GET['column'] : '';
+
     // Query to select all columns from Sales and the Item_name from Item
     $query = "SELECT Sales.*, Item.Item_name FROM Sales 
               JOIN Item ON Sales.Item_number = Item.Item_number";
@@ -118,6 +122,25 @@
         <li><a href="sales.php" class="active">Sales</a></li>
         <li class="User"><a href="create_account.php">Client Side</a></li>
     </ul>
+
+    <!-- Search form -->
+    <div style="text-align: center; margin: 20px;">
+        <form method="GET" action="item.php">
+            <input type="text" name="search" placeholder="Search...">
+            <select name="column">
+                <option value="Item_number">Item No.</option>
+                <option value="Client_id">Client ID</option>
+                <option value="Item_name">Item Name</option>
+                <option value="Item_description">Item Description</option>
+                <option value="Asking_price">Asking Price</option>
+                <option value="Condition">Condition</option>
+                <option value="Comments">Comments</option>
+            </select>
+            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            Search
+            </button>
+        </form>
+    </div>
 
     <!-- Table to display client data -->
     <table class="Display_table">

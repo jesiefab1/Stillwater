@@ -121,12 +121,11 @@
             </button>
         </div>
 
-            <!-- Search form -->
+                <!-- Search form -->
         <div style="text-align: center; margin: 20px;">
             <form method="GET" action="item.php">
                 <input type="text" name="search" placeholder="Search...">
                 <select name="column">
-                    <option value="Item_number">Item No.</option>
                     <option value="Client_id">Client ID</option>
                     <option value="Item_name">Item Name</option>
                     <option value="Item_description">Item Description</option>
@@ -138,7 +137,7 @@
                 Search
                 </button>
             </form>
-        </div>    
+        </div>
         
         <script>
             document.querySelector('button').addEventListener('mouseover', function() {
@@ -168,7 +167,11 @@
         $search = isset($_GET['search']) ? $_GET['search'] : '';
         $column = isset($_GET['column']) ? $_GET['column'] : '';
 
-        $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id AND $column LIKE '%$search%'";
+        if (!empty($search) && !empty($column)) {
+            $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id AND Item.$column LIKE '%$search%'";
+        } else {
+            $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id";
+        }
         $result = mysqli_query($conn, $query);
 
         if (!$result) {

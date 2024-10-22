@@ -104,6 +104,24 @@
         <li class="User"><a href="create_account.php">Client Side</a></li>
     </ul>
 
+    <!-- Search form -->
+    <div style="text-align: center; margin: 20px;">
+        <form method="GET" action="purchases.php">
+            <input type="text" name="search" placeholder="Search...">
+            <select name="column">
+                <option value="Item_name">Item Name</option>
+                <option value="Client_id">Client ID</option>
+                <option value="Purchase_cost">Purchase Cost</option>
+                <option value="Date_purchased">Date Purchased</option>
+                <option value="Condition_at_purchased">Condition at Purchased</option>
+
+            </select>
+            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            Search
+            </button>
+        </form>
+    </div>
+
     <!-- Table to display client data -->
     <table class="Display_table">
         <tr>
@@ -114,9 +132,20 @@
             <th>Condition at Purchased</th>
         </tr>
         <?php
+        // Get search parameters
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $column = isset($_GET['column']) ? $_GET['column'] : '';
 
         // Query to select all clients from the database
-        $query = "SELECT Purchases.* , Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number";
+        if (!empty($search) && !empty($column)) {
+            if ($column == 'Item_name') {
+            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number WHERE Item.$column LIKE '%$search%'";
+            } else {
+            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number WHERE Purchases.$column LIKE '%$search%'";
+            }
+        } else {
+            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number";
+        }
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
