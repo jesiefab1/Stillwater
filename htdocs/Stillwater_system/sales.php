@@ -125,16 +125,15 @@
 
     <!-- Search form -->
     <div style="text-align: center; margin: 20px;">
-        <form method="GET" action="item.php">
+        <form method="GET" action="sales.php">
             <input type="text" name="search" placeholder="Search...">
             <select name="column">
-                <option value="Item_number">Item No.</option>
+                <option value="Item_number">Item Name</option>
                 <option value="Client_id">Client ID</option>
-                <option value="Item_name">Item Name</option>
-                <option value="Item_description">Item Description</option>
-                <option value="Asking_price">Asking Price</option>
-                <option value="Condition">Condition</option>
-                <option value="Comments">Comments</option>
+                <option value="Item_name">Commission Paid</option>
+                <option value="Item_description">Selling Price</option>
+                <option value="Asking_price">Sales Tax</option>
+                <option value="Condition">Date Sold</option>
             </select>
             <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
             Search

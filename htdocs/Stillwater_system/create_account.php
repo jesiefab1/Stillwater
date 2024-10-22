@@ -106,6 +106,7 @@
             color: white;
             border-radius: 100px;
             border: none;
+            cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
         }
         .button-wrapper > button:hover {
