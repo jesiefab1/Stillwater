@@ -14,9 +14,10 @@
         $password = $_POST['password'];
         $phone = $_POST['phone'];
         $address = $_POST['address'];
+        $status = 0;
 
         // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address) VALUES ('$first_name', '$last_name', '$email', '$password', '$phone', '$address')";
+        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address, Status) VALUES ('$first_name', '$last_name', '$email', '$password', '$phone', '$address', '$status')";
         
         // Execute the SQL query
         if ($result = mysqli_query($conn, $query)) {

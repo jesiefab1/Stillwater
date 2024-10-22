@@ -12,9 +12,10 @@
         $password = $_POST['password'];
         $phone = $_POST['phone'];
         $address = $_POST['address'];
+        $status = 0;
 
         // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Phone_number, Address) VALUES ('$first_name', '$lastname', '$email', '$phone', '$address')";
+        $query = "INSERT INTO Client (First_name, Lastname, Email, Phone_number, Address, Status) VALUES ('$first_name', '$lastname', '$email', '$phone', '$address', '$status')";
         
         // Execute the SQL query
         $result = mysqli_query($conn, $query);

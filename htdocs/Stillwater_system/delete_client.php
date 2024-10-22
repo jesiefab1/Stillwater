@@ -7,7 +7,7 @@ if (isset($_GET['Client_id'])) {
     $Client_id = $_GET['Client_id'];
 
     // Prepare the DELETE statement
-    $stmt = $conn->prepare("DELETE FROM Client WHERE Client_id = ?");
+    $stmt = $conn->prepare("UPDATE Client SET Status = 1 WHERE Client_id = ?");
     $stmt->bind_param("i", $Client_id);
 
     // Execute the statement

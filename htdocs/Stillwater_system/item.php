@@ -131,6 +131,7 @@
                     <option value="Item_description">Item Description</option>
                     <option value="Asking_price">Asking Price</option>
                     <option value="Condition">Condition</option>
+                    <option value="Is_sold">Status</option>
                     <option value="Comments">Comments</option>
                 </select>
                 <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
@@ -159,6 +160,7 @@
             <th>Asking Price</th>
             <th>Condition</th>
             <th>Comments</th>
+            <th>Status</th>
             <th>Actions</th>
 
         </tr>
@@ -192,6 +194,7 @@
             <td><?php echo number_format($row['Asking_price'], 2); ?></td>
             <td><?php echo $row['Condition']; ?></td>
             <td><?php echo $row['Comments']; ?></td>
+            <td><?php echo $row['Is_sold'] == 0 ? 'Available' : 'Sold'; ?></td>
             <td>
                 <div class="button-container">
                     <?php updateButton($row['Item_number']); ?>

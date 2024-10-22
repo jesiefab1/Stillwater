@@ -20,9 +20,10 @@
         $description = $_POST['description'];
         $asking_price = $_POST['asking_price'];
         $condition = $_POST['condition'];
+        $is_sold = 0;
     
         // Prepare and bind
-        $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`) VALUES ('$client_id', '$Item_name', '$description', '$asking_price', '$condition')";
+        $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`, Is_sold) VALUES ('$client_id', '$Item_name', '$description', '$asking_price', '$condition', '$is_sold')";
         $result = mysqli_query($conn, $query);
     
         // Check if the query is executed

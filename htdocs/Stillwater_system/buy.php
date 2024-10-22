@@ -142,7 +142,7 @@
 
     <div class="item-container">
         <?php
-        $query = "SELECT * FROM Item WHERE Client_id != '$client_id'";
+        $query = "SELECT * FROM Item WHERE Client_id != '$client_id' AND Is_sold = '0'";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {

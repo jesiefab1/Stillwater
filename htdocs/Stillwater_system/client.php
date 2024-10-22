@@ -149,6 +149,7 @@ function deleteButton($Client_id) {
             <th>Phone Number</th>
             <th>Email</th>
             <th>Address</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
         <?php
@@ -173,6 +174,7 @@ function deleteButton($Client_id) {
             <td><?php echo $row['Phone_number']; ?></td>
             <td><?php echo $row['Email']; ?></td>
             <td><?php echo $row['Address']; ?></td>
+            <td><?php echo $row['Status'] == 0 ? 'Valid' : 'Deleted'; ?></td>
             <td>
                 <div class="button-container">
                     <?php updateButton($row['Client_id']); ?>

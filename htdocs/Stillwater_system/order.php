@@ -143,6 +143,10 @@
         $query2 = "INSERT INTO Purchases (Item_number, Client_id, Purchase_cost, Date_purchased, Condition_at_purchased) VALUES ('$Item_number', '$client_id', '{$row['Asking_price']}', '$date_time', '{$row['Condition']}')";
         $result2 = mysqli_query($conn, $query2);
 
+        // Mark the item as sold
+        $query3 = "UPDATE Item SET is_sold = 1 WHERE Item_number = '$Item_number'";
+        $result3 = mysqli_query($conn, $query3);
+
         echo "<h3>Item purchased successfully!</h3>";
 
     }
