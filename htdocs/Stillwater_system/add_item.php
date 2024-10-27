@@ -2,6 +2,15 @@
     // Include database connection file
     include 'db_connection.php';
 
+    session_start();
+
+    // Check if the user_admin is logged in
+    if (!isset($_SESSION['user_admin'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'admin_login.php';</script>";
+        exit;
+    } 
+
     // Check if form is submitted
     if(isset($_POST['submit'])) {
         $Item_name = $_POST['Item_name'];
@@ -48,7 +57,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fff8e1;
             margin: 0;
             padding: 0;
             justify-content: center;

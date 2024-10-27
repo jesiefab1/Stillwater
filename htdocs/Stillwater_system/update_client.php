@@ -1,40 +1,47 @@
 <?php
-// Include database connection file
-include 'db_connection.php';
+    // Include database connection file
+    include 'db_connection.php';
 
-// Check if Client_id is set in the URL
-if (isset($_GET['Client_id'])) {
-    $Client_id = $_GET['Client_id'];
+    // Check if the user_admin is logged in
+    if (!isset($_SESSION['user_admin'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'admin_login.php';</script>";
+        exit;
+    } 
 
-    // Fetch the client data from the database
-    $stmt = $conn->prepare("SELECT * FROM Client WHERE Client_id = ?");
-    $stmt->bind_param("i", $Client_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $client = $result->fetch_assoc();
+    // Check if Client_id is set in the URL
+    if (isset($_GET['Client_id'])) {
+        $Client_id = $_GET['Client_id'];
 
-    // Check if the form is submitted
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Retrieve form data
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
-        $phone_number = $_POST['phone_number'];
-        $email = $_POST['email'];
-        $address = $_POST['address'];
-
-        // Update the client data in the database
-        $stmt = $conn->prepare("UPDATE Client SET First_name = ?, Lastname = ?, Phone_number = ?, Email = ?, Address = ? WHERE Client_id = ?");
-        $stmt->bind_param("sssssi", $first_name, $last_name, $phone_number, $email, $address, $Client_id);
+        // Fetch the client data from the database
+        $stmt = $conn->prepare("SELECT * FROM Client WHERE Client_id = ?");
+        $stmt->bind_param("i", $Client_id);
         $stmt->execute();
+        $result = $stmt->get_result();
+        $client = $result->fetch_assoc();
 
-        // Redirect to the client page after updating
-        header("Location: client.php");
+        // Check if the form is submitted
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Retrieve form data
+            $first_name = $_POST['first_name'];
+            $last_name = $_POST['last_name'];
+            $phone_number = $_POST['phone_number'];
+            $email = $_POST['email'];
+            $address = $_POST['address'];
+
+            // Update the client data in the database
+            $stmt = $conn->prepare("UPDATE Client SET First_name = ?, Lastname = ?, Phone_number = ?, Email = ?, Address = ? WHERE Client_id = ?");
+            $stmt->bind_param("sssssi", $first_name, $last_name, $phone_number, $email, $address, $Client_id);
+            $stmt->execute();
+
+            // Redirect to the client page after updating
+            header("Location: client.php");
+            exit();
+        }
+    } else {
+        echo "Invalid request.";
         exit();
     }
-} else {
-    echo "Invalid request.";
-    exit();
-}
 ?>
 
 <!DOCTYPE html>

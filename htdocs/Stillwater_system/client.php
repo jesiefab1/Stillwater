@@ -1,17 +1,26 @@
 <?php
-include('db_connection.php');
+    include('db_connection.php');
 
-function updateButton($Client_id) {
-    echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
-    Update
-    </button>';
-}
+    session_start();
 
-function deleteButton($Client_id) {
-    echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
-    Delete
-    </button>';
-}
+    // Check if the user_admin is logged in
+    if (!isset($_SESSION['user_admin'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'admin_login.php';</script>";
+        exit;
+    } 
+
+    function updateButton($Client_id) {
+        echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
+        Update
+        </button>';
+    }
+
+    function deleteButton($Client_id) {
+        echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
+        Delete
+        </button>';
+    }
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +33,7 @@ function deleteButton($Client_id) {
         /* Basic styling for the body */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fff8e1;
             margin: 0;
             padding: 0;
         }

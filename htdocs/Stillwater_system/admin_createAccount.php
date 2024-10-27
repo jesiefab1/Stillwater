@@ -4,32 +4,32 @@
     // Include the database connection file
     include ('db_connection.php');
 
+    if (isset($_SESSION['user_admin'])) {
+        header("Location: client.php");
+        exit;
+    }
+
     // Check if the form is submitted
     if(isset($_POST['submit'])) {
 
         // Get form data
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
+        $username = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $phone = $_POST['phone'];
-        $address = $_POST['address'];
         $status = 0;
 
         // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Password, Phone_number, Address, Status) VALUES ('$first_name', '$last_name', '$email', '$password', '$phone', '$address', '$status')";
+        $query = "INSERT INTO Admin_users (Username, Email, Password, Status) VALUES ('$username', '$email', '$password', '$status')";
         
         // Execute the SQL query
         if ($result = mysqli_query($conn, $query)) {
-            $query1 = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
+            $query1 = "SELECT * FROM Admin_users WHERE Email = '$email' AND Password = '$password'";
             $result1 = mysqli_query($conn, $query1);
 
             if (mysqli_num_rows($result1) > 0) {
                 // Email and password are valid
                 $row = mysqli_fetch_assoc($result1);
-                $_SESSION['Client_id'] = $row['Client_id'];
-                $_SESSION['First_name'] = $row['First_name'];
-                $_SESSION['Lastname'] = $row['Lastname']; // Store Client_id in session
+                $_SESSION['user_admin'] = $email;
                 echo "<script>alert('Account created successfully.')</script>";
                 $success = true;
             }
@@ -58,30 +58,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fff8e1;
             margin: 0;
             padding: 0;
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-        .Back {
-            text-align: right;
-        }
-        .Back > button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 16px 8px;
-            border: none;
-            cursor: pointer;
-            width: 100px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .Back > button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
         }
         .container {
             background-color: #fff;
@@ -103,7 +85,7 @@
         .button-wrapper > button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #ffb921;
             color: white;
             border-radius: 100px;
             border: none;
@@ -111,7 +93,7 @@
             transition: background-color 0.3s, transform 0.3s;
         }
         .button-wrapper > button:hover {
-            background-color: #45a049;
+            background-color: #ffa221;
             transform: scale(1.1);
         }
         h1 {
@@ -135,7 +117,7 @@
         input[type="submit"] {
             width: 100%;
             padding: 10px;
-            background-color: #28a745;
+            background-color: #ffb921;
             border: none;
             border-radius: 4px;
             color: #fff;
@@ -143,40 +125,28 @@
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #218838;
+            background-color: #ffa221;
         }
     </style>
 </head>
 <body>
-    <div class="Back">
-        <button onclick="window.location.href='client.php'">Back</button>
-    </div>
 
     <div class="container">
         <h1>Signup</h1>
         <form action=" " method="POST">
-            <label for="name">First Name:</label>
-            <input type="text" name="first_name" required>
+            <label for="name">Username:</label>
+            <input type="text" name="username" required>
 
-            <label for="name">Last Name:</label>
-            <input type="text" name="last_name" required>
-            
             <label for="email">Email:</label>
             <input type="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" name="password" required>
-            
-            <label for="phone">Phone:</label>
-            <input type="text" name="phone" required>
-            
-            <label for="address">Address:</label>
-            <input type="text" name="address" required>
-            
+
             <input type="submit" name="submit" value="Create Account">
         </form>
         <div class="button-wrapper">
-            <button onclick="window.location.href='log_in.php'">
+            <button onclick="window.location.href='admin_login.php'">
                 Log In
             </button>
         </div>

@@ -1,6 +1,15 @@
 <?php
     include ('db_connection.php');
 
+    session_start();
+
+    // Check if the user_admin is logged in
+    if (!isset($_SESSION['user_admin'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'admin_login.php';</script>";
+        exit;
+    } 
+
     function updateButton($Item_number) {
         echo '<button onclick="window.location.href=\'update_item.php?Item_number=' . $Item_number . '\'" class="updateButton">
         Update
@@ -24,7 +33,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fff8e1;
             margin: 0;
             padding: 0;
         }

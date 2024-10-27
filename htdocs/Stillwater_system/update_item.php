@@ -1,47 +1,54 @@
 <?php
-// Include database connection file
-include 'db_connection.php';
+    // Include database connection file
+    include 'db_connection.php';
 
-// Check if Client_id is set in the URL
-if (isset($_GET['Item_number'])) {
-    $Item_number = $_GET['Item_number'];
+    // Check if the user_admin is logged in
+    if (!isset($_SESSION['user_admin'])) {
+        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+        echo "<script>window.location.href = 'admin_login.php';</script>";
+        exit;
+    } 
 
-    // Fetch the client data from the database
-    $stmt = $conn->prepare("SELECT * FROM Item WHERE Item_number = ?");
-    $stmt->bind_param("i", $Item_number);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $item = $result->fetch_assoc();
+    // Check if Client_id is set in the URL
+    if (isset($_GET['Item_number'])) {
+        $Item_number = $_GET['Item_number'];
 
-    if (!$item) {
-        echo "Item not found.";
+        // Fetch the client data from the database
+        $stmt = $conn->prepare("SELECT * FROM Item WHERE Item_number = ?");
+        $stmt->bind_param("i", $Item_number);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $item = $result->fetch_assoc();
+
+        if (!$item) {
+            echo "Item not found.";
+            exit();
+        }
+
+        // Check if the form is submitted
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Retrieve form data
+            $Client_id = $_POST['Client_id'];
+            $Item_name = $_POST['Item_name'];
+            $Item_description = $_POST['Item_description'];
+            $Asking_price = $_POST['Asking_price'];
+            $Condition = $_POST['Condition'];
+
+            // Update the client data in the database
+            $stmt = $conn->prepare("UPDATE Item SET Client_id = ?, Item_name = ?, Item_description = ?, Asking_price = ?, `Condition` = ? WHERE Item_number = ?");
+            $stmt->bind_param("issdsi", $Client_id, $Item_name, $Item_description, $Asking_price, $Condition, $Item_number);
+            if ($stmt->execute()) {
+                // Redirect to the client page after updating
+                header("Location: item.php");
+                exit();
+            } else {
+                echo "Error updating record: " . $stmt->error;
+            };
+        }   
+    } else {
+        echo "Invalid request.";
         exit();
     }
-
-    // Check if the form is submitted
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Retrieve form data
-        $Client_id = $_POST['Client_id'];
-        $Item_name = $_POST['Item_name'];
-        $Item_description = $_POST['Item_description'];
-        $Asking_price = $_POST['Asking_price'];
-        $Condition = $_POST['Condition'];
-
-        // Update the client data in the database
-        $stmt = $conn->prepare("UPDATE Item SET Client_id = ?, Item_name = ?, Item_description = ?, Asking_price = ?, `Condition` = ? WHERE Item_number = ?");
-        $stmt->bind_param("issdsi", $Client_id, $Item_name, $Item_description, $Asking_price, $Condition, $Item_number);
-        if ($stmt->execute()) {
-            // Redirect to the client page after updating
-            header("Location: item.php");
-            exit();
-        } else {
-            echo "Error updating record: " . $stmt->error;
-        };
-    }   
-} else {
-    echo "Invalid request.";
-    exit();
-}
 ?>
 
 <!DOCTYPE html>

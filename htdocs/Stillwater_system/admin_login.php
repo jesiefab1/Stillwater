@@ -1,40 +1,38 @@
 <?php
+    // Start the session
+    session_start();
+
     // Include the database connection file
     include ('db_connection.php');
 
-    session_start();
-
-    // Check if the user_admin is logged in
-    if (!isset($_SESSION['user_admin'])) {
-        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
-        echo "<script>window.location.href = 'admin_login.php';</script>";
+    if (isset($_SESSION['user_admin'])) {
+        header("Location: client.php");
         exit;
-    } 
+    }
 
     // Check if the form is submitted
-    if(isset($_POST['submit'])) {
-
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get form data
-        $first_name = $_POST['first_name'];
-        $lastname = $_POST['lastname'];
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $phone = $_POST['phone'];
-        $address = $_POST['address'];
-        $status = 0;
 
-        // Prepare the SQL query
-        $query = "INSERT INTO Client (First_name, Lastname, Email, Phone_number, Address, Status) VALUES ('$first_name', '$lastname', '$email', '$phone', '$address', '$status')";
-        
-        // Execute the SQL query
+        // Prepare the SQL query to validate email and password
+        $query = "SELECT * FROM Admin_users WHERE Email = '$email' AND Password = '$password'";
         $result = mysqli_query($conn, $query);
 
-        // Check if the query is executed
-        if ($result) {
+        // Check if the query returned any rows
+        if (mysqli_num_rows($result) > 0) {
+            // Email and password are valid
+            $row = mysqli_fetch_assoc($result);
+            $_SESSION['user_admin'] = $email;
+            echo "<script>alert('Login successful.')</script>";
             $success = true;
         } else {
-            echo "Error: " . $query . "<br>" . mysqli_error($conn);
+            // Email or password is invalid
+            echo "<script>alert('Invalid Email or Password.')</script>";
+            $success = false;
         }
+        
     }
 ?>
 <!DOCTYPE html>
@@ -49,7 +47,6 @@
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
-            alert("Client added successfully!");
             window.location.href = "client.php";
         };
         <?php endif; ?>
@@ -67,19 +64,6 @@
             align-items: center;
             height: 100vh;
         }
-        .Back {
-            text-align: right;
-        }
-        .Back > button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 16px 8px;
-            border: none;
-            cursor: pointer;
-            width: 100px;
-            border-radius: 5px;
-        }
         .container {
             background-color: #fff;
             padding: 20px;
@@ -90,6 +74,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+        }
+        .button-wrapper {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .button-wrapper > button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffb921;
+            color: white;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .button-wrapper > button:hover {
+            background-color: #ffa221;
+            transform: scale(1.1);
         }
         h1 {
             text-align: center;
@@ -112,7 +116,7 @@
         input[type="submit"] {
             width: 100%;
             padding: 10px;
-            background-color: #28a745;
+            background-color: #ffb921;
             border: none;
             border-radius: 4px;
             color: #fff;
@@ -120,7 +124,7 @@
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #218838;
+            background-color: #ffa221;
         }
         
     </style>
@@ -128,33 +132,35 @@
 </head>
 <body>
 
-    <div class="Back">
-        <button onclick="window.location.href='client.php'">Back</button>
-    </div>
+    <script>
+        // JavaScript to add hover effects to the add button
+        document.querySelector('button').addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#ffa221';
+            this.style.transform = 'scale(1.05)';
+        });
+        document.querySelector('button').addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#ffb921';
+            this.style.transform = 'scale(1)';
+        });
+    </script>
 
     <div class="container">
-        <h1>Add New Client</h1>
-        <form action="" method="POST">
-            <label for="name">First Name:</label>
-            <input type="text" name="first_name" required>
+        <h1>Log In</h1>
+        <form action=" " method="POST">
 
-            <label for="name">Last Name:</label>
-            <input type="text"  name="lastname" required>
-            
             <label for="email">Email:</label>
             <input type="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" name="password" required>
-            
-            <label for="phone">Phone:</label>
-            <input type="text" name="phone" required>
-            
-            <label for="address">Address:</label>
-            <input type="text" name="address" required>
-            
-            <input type="submit" name="submit" value="Add Client">
+
+            <input type="submit" name="submit" value="Enter Account">
         </form>
+        <div class="button-wrapper">
+            <button onclick="window.location.href='admin_createAccount.php'">
+                Create Account
+            </button>
+        </div>
     </div>
 </body>
 </html>
