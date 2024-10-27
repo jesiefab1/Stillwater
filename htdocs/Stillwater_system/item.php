@@ -21,6 +21,13 @@
         Delete
         </button>';
     }
+
+    function highlight($text, $search) {
+        if ($search != '') {
+            return str_ireplace($search, '<span class="highlight">' . $search . '</span>', $text);
+        }
+        return $text;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +37,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation Menu</title>
     <style>
-
         body {
             font-family: Arial, sans-serif;
             background-color: #fff8e1;
@@ -62,7 +68,7 @@
             background-color: #575757;
         }
         .nav-menu li a.active {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         .Display_table {
             margin: auto;
@@ -94,13 +100,13 @@
             margin-right: 5px; /* Add some space between the buttons */
         }
         .updateButton {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         .deleteButton {
             background-color: #f44336;
         }
         .updateButton:hover {
-            background-color: #45a049;
+            background-color: #ffa221;
         }
         .deleteButton:hover {
             background-color: #e53935;
@@ -111,58 +117,60 @@
             justify-content: center;
             align-items: center;
         }
+        .add-button, .search-button {
+            padding: 10px 20px;
+            background-color: #ffb921;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .search-form input[type="text"], .search-form select {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .add-button:hover, .search-button:hover {
+            background-color: #ffa221;
+            transform: scale(1.05);
+        }
+        .highlight {
+            background-color: yellow;
+        }
     </style>
 </head>
 <body>
     <ul class="nav-menu">
-
         <li><a href="client.php">Client</a></li>
-        <li><a href="item.php" class="active" >Item</a></li>
+        <li><a href="item.php" class="active">Item</a></li>
         <li><a href="purchases.php">Purchases</a></li>
         <li><a href="sales.php">Sales</a></li>
         <li class="User"><a href="create_account.php">Client Side</a></li>
-
     </ul>
 
-        <div style="text-align: right; margin: 20px;">
-            <button onclick="window.location.href='add_item.php'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+    <div style="text-align: right; margin: 20px;">
+        <button onclick="window.location.href='add_item.php'" class="add-button">
             Add
-            </button>
-        </div>
+        </button>
+    </div>
 
-                <!-- Search form -->
-        <div style="text-align: center; margin: 20px;">
-            <form method="GET" action="item.php">
-                <input type="text" name="search" placeholder="Search...">
-                <select name="column">
-                    <option value="Client_id">Client ID</option>
-                    <option value="Item_name">Item Name</option>
-                    <option value="Item_description">Item Description</option>
-                    <option value="Asking_price">Asking Price</option>
-                    <option value="Condition">Condition</option>
-                    <option value="Is_sold">Status</option>
-                    <option value="Comments">Comments</option>
-                </select>
-                <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+    <!-- Search form -->
+    <div style="text-align: center; margin: 20px;" class="search-form">
+        <form method="GET" action="item.php">
+            <input type="text" name="search" placeholder="Search...">
+            <select name="status">
+                <option value="">All</option>
+                <option value="0">Available</option>
+                <option value="1">Sold</option>
+            </select>
+            <button type="submit" class="search-button">
                 Search
-                </button>
-            </form>
-        </div>
-        
-        <script>
-            document.querySelector('button').addEventListener('mouseover', function() {
-            this.style.backgroundColor = '#45a049';
-            this.style.transform = 'scale(1.05)';
-            });
-            document.querySelector('button').addEventListener('mouseout', function() {
-            this.style.backgroundColor = '#4CAF50';
-            this.style.transform = 'scale(1)';
-            });
-        </script>
+            </button>
+        </form>
+    </div>
 
     <table class="Display_table">
         <tr>
-
             <th>Client id</th>
             <th>Item Name</th>
             <th>Item Description</th>
@@ -171,18 +179,18 @@
             <th>Comments</th>
             <th>Status</th>
             <th>Actions</th>
-
         </tr>
         <?php
         // Get search parameters
         $search = isset($_GET['search']) ? $_GET['search'] : '';
-        $column = isset($_GET['column']) ? $_GET['column'] : '';
+        $status = isset($_GET['status']) ? $_GET['status'] : '';
 
-        if (!empty($search) && !empty($column)) {
-            $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id AND Item.$column LIKE '%$search%'";
-        } else {
-            $query = "SELECT * FROM Item, Client WHERE Item.Client_id = Client.Client_id";
+        $query = "SELECT * FROM Item INNER JOIN Client ON Item.Client_id = Client.Client_id WHERE (Item_name LIKE '%$search%' OR Client.Client_id LIKE '%$search%' OR Item_description LIKE '%$search%' OR Asking_price LIKE '%$search%' OR `Condition` LIKE '%$search%')";
+
+        if ($status !== '') {
+            $query .= " AND Is_sold = '$status'";
         }
+
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -192,17 +200,15 @@
         while($row = mysqli_fetch_array($result)) {
 
         setlocale(LC_MONETARY, 'c', 'en-PH');
-
-
         ?>
 
         <tr class="outputs">
-            <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo $row['Item_name']; ?></td>
-            <td><?php echo $row['Item_description']; ?></td>
-            <td><?php echo number_format($row['Asking_price'], 2); ?></td>
-            <td><?php echo $row['Condition']; ?></td>
-            <td><?php echo $row['Comments']; ?></td>
+            <td><?php echo highlight($row['Client_id'], $search); ?></td>
+            <td><?php echo highlight($row['Item_name'], $search); ?></td>
+            <td><?php echo highlight($row['Item_description'], $search); ?></td>
+            <td><?php echo highlight(number_format($row['Asking_price'], 2), $search); ?></td>
+            <td><?php echo highlight($row['Condition'], $search); ?></td>
+            <td><?php echo ($row['Comments']); ?></td>
             <td><?php echo $row['Is_sold'] == 0 ? 'Available' : 'Sold'; ?></td>
             <td>
                 <div class="button-container">

@@ -12,11 +12,12 @@
 
     // Get search parameters
     $search = isset($_GET['search']) ? $_GET['search'] : '';
-    $column = isset($_GET['column']) ? $_GET['column'] : '';
 
     // Query to select all columns from Sales and the Item_name from Item
-    $query = "SELECT Sales.*, Item.Item_name FROM Sales 
-              JOIN Item ON Sales.Item_number = Item.Item_number";
+    $query = "SELECT Sales.*, Item.Item_name, Client.First_name, Client.Lastname FROM Sales 
+              INNER JOIN Item ON Sales.Item_number = Item.Item_number 
+              INNER JOIN Client ON Sales.Client_id = Client.Client_id
+              WHERE (Item.Item_name LIKE '%$search%' OR Sales.Client_id LIKE '%$search%' OR Sales.Commission_paid LIKE '%$search%' OR Sales.Selling_price LIKE '%$search%' OR Sales.Sales_tax LIKE '%$search%' OR Sales.Date_sold LIKE '%$search%') ORDER BY Date_sold DESC";
     $result = mysqli_query($conn, $query);
 
     // Check if the query was successful
@@ -24,9 +25,12 @@
         die("Query failed: " . mysqli_error($conn));
     }
 
-    // Check if any rows were returned
-    if (mysqli_num_rows($result) == 0) {
-        echo "No data found.";
+    // Function to highlight search term
+    function highlight($text, $search) {
+        if ($search != '') {
+            return preg_replace('/(' . preg_quote($search, '/') . ')/i', '<span class="highlight">$1</span>', $text);
+        }
+        return $text;
     }
 ?>
 
@@ -70,7 +74,7 @@
             background-color: #575757;
         }
         .nav-menu li a.active {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         /* Styling for the table displaying client data */
         .Display_table {
@@ -92,33 +96,30 @@
         .outputs td {
             text-align: center;
         }
-        /* Styling for the update and delete buttons */
-        .updateButton, .deleteButton {
+        .search-form {
+            text-align: center;
+            margin: 20px;
+        }
+        .search-form input[type="text"], .search-form select {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .search-button {
             padding: 10px 20px;
+            background-color: #ffb921;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-right: 5px; /* Add some space between the buttons */
         }
-        .updateButton {
-            background-color: #4CAF50;
+        .search-button:hover {
+            background-color: #ffa221;
+            transform: scale(1.05);
         }
-        .deleteButton {
-            background-color: #f44336;
-        }
-        .updateButton:hover {
-            background-color: #45a049;
-        }
-        .deleteButton:hover {
-            background-color: #e53935;
-        }
-        /* Container for the buttons */
-        .button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Highlight class */
+        .highlight {
+            background-color: yellow;
         }
     </style>
 </head>
@@ -133,18 +134,10 @@
     </ul>
 
     <!-- Search form -->
-    <div style="text-align: center; margin: 20px;">
+    <div class="search-form">
         <form method="GET" action="sales.php">
-            <input type="text" name="search" placeholder="Search...">
-            <select name="column">
-                <option value="Item_number">Item Name</option>
-                <option value="Client_id">Client ID</option>
-                <option value="Item_name">Commission Paid</option>
-                <option value="Item_description">Selling Price</option>
-                <option value="Asking_price">Sales Tax</option>
-                <option value="Condition">Date Sold</option>
-            </select>
-            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" class="search-button">
             Search
             </button>
         </form>
@@ -168,12 +161,12 @@
             
         ?>
         <tr class="outputs">
-            <td><?php echo $row['Item_name'];?></td>
-            <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo number_format($row['Commission_paid']); ?></td>
-            <td><?php echo number_format($row['Selling_price']); ?></td>
-            <td><?php echo $row['Sales_tax']; ?></td>
-            <td><?php echo $row['Date_sold']; ?></td>
+            <td><?php echo highlight($row['Item_name'], $search); ?></td>
+            <td><?php echo highlight($row['Lastname'] . ', ' . $row['First_name'], $search); ?></td>
+            <td><?php echo highlight(number_format($row['Commission_paid']), $search); ?></td>
+            <td><?php echo highlight(number_format($row['Selling_price']), $search); ?></td>
+            <td><?php echo highlight($row['Sales_tax'], $search); ?></td>
+            <td><?php echo highlight($row['Date_sold'], $search); ?></td>
         </tr>
         <?php
         }

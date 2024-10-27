@@ -2,6 +2,9 @@
     // Include database connection file
     include 'db_connection.php';
 
+    session_start();
+
+
     // Check if the user_admin is logged in
     if (!isset($_SESSION['user_admin'])) {
         echo "<script>alert('You must log in first. Redirecting to login page...');</script>";

@@ -8,7 +8,14 @@
         echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
         echo "<script>window.location.href = 'admin_login.php';</script>";
         exit;
-    }  
+    }
+
+    function highlight($text, $search) {
+        if ($search != '') {
+            return str_ireplace($search, '<span class="highlight">' . $search . '</span>', $text);
+        }
+        return $text;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +58,7 @@
             background-color: #575757;
         }
         .nav-menu li a.active {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         /* Styling for the table displaying client data */
         .Display_table {
@@ -73,33 +80,29 @@
         .outputs td {
             text-align: center;
         }
-        /* Styling for the update and delete buttons */
-        .updateButton, .deleteButton {
+        .search-form {
+            text-align: center;
+            margin: 20px;
+        }
+        .search-form input[type="text"], .search-form select {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .search-button {
             padding: 10px 20px;
+            background-color: #ffb921;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-right: 5px; /* Add some space between the buttons */
         }
-        .updateButton {
-            background-color: #4CAF50;
+        .search-button:hover {
+            background-color: #ffa221;
+            transform: scale(1.05);
         }
-        .deleteButton {
-            background-color: #f44336;
-        }
-        .updateButton:hover {
-            background-color: #45a049;
-        }
-        .deleteButton:hover {
-            background-color: #e53935;
-        }
-        /* Container for the buttons */
-        .button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .highlight {
+            background-color: yellow;
         }
     </style>
 </head>
@@ -114,20 +117,16 @@
     </ul>
 
     <!-- Search form -->
-    <div style="text-align: center; margin: 20px;">
+    <div class="search-form">
         <form method="GET" action="purchases.php">
             <input type="text" name="search" placeholder="Search...">
             <select name="column">
-                <option value="Item_name">Item Name</option>
-                <option value="Client_id">Client ID</option>
-                <option value="Purchase_cost">Purchase Cost</option>
-                <option value="Date_purchased">Date Purchased</option>
-                <option value="Condition_at_purchased">Condition at Purchased</option>
-
+                <option value="">All</option>
+                <option value="Very Good">Very Good</option>
+                <option value="Good">Good</option>
+                <option value="Bad">Bad</option>
             </select>
-            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
-            Search
-            </button>
+            <button type="submit" class="search-button">Search</button>
         </form>
     </div>
 
@@ -143,18 +142,18 @@
         <?php
         // Get search parameters
         $search = isset($_GET['search']) ? $_GET['search'] : '';
-        $column = isset($_GET['column']) ? $_GET['column'] : '';
+        $status = isset($_GET['column']) ? $_GET['column'] : '';
 
         // Query to select all clients from the database
-        if (!empty($search) && !empty($column)) {
-            if ($column == 'Item_name') {
-            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number WHERE Item.$column LIKE '%$search%'";
-            } else {
-            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number WHERE Purchases.$column LIKE '%$search%'";
-            }
-        } else {
-            $query = "SELECT Purchases.*, Item.Item_name FROM Purchases INNER JOIN Item ON Purchases.Item_number = Item.Item_number";
+        $query = "SELECT Purchases.*, Item.Item_name, Client.First_name, Client.Lastname FROM Purchases 
+        INNER JOIN Item ON Purchases.Item_number = Item.Item_number
+        INNER JOIN Client ON Purchases.Client_id = Client.Client_id 
+        WHERE (Item_name LIKE '%$search%' OR Purchases.Client_id LIKE '%$search%' OR Purchase_cost LIKE '%$search%' OR Date_purchased LIKE '%$search%')";
+        if ($status != '') {
+            $query .= " AND Condition_at_purchased = '$status'";
         }
+        $query .= " ORDER BY Date_purchased DESC";
+
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -167,11 +166,11 @@
             
         ?>
         <tr class="outputs">
-            <td><?php echo $row['Item_name']?></td>
-            <td><?php echo $row['Client_id']; ?></td>
+            <td><?php echo highlight($row['Item_name'], $search)?></td>
+            <td><?php echo highlight($row['Lastname'] . ', ' . $row['First_name'], $search); ?></td>
             <td><?php echo number_format($row['Purchase_cost']); ?></td>
             <td><?php echo $row['Date_purchased']; ?></td>
-            <td><?php echo $row['Condition_at_purchased']; ?></td>
+            <td><?php echo highlight($row['Condition_at_purchased'], $search); ?></td>
         </tr>
         <?php
         }

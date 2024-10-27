@@ -21,6 +21,13 @@
         Delete
         </button>';
     }
+
+    function highlight($text, $search) {
+        if ($search != '') {
+            return str_ireplace($search, '<span class="highlight">' . $search . '</span>', $text);
+        }
+        return $text;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +70,7 @@
             background-color: #575757;
         }
         .nav-menu li a.active {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         /* Styling for the table displaying client data */
         .Display_table {
@@ -96,13 +103,13 @@
             margin-right: 5px; /* Add some space between the buttons */
         }
         .updateButton {
-            background-color: #4CAF50;
+            background-color: #ffb921;
         }
         .deleteButton {
             background-color: #f44336;
         }
         .updateButton:hover {
-            background-color: #45a049;
+            background-color: #ffa221;
         }
         .deleteButton:hover {
             background-color: #e53935;
@@ -112,6 +119,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        /* Styling for the add button */
+        .add-button {
+            padding: 10px 20px;
+            background-color: #ffb921;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .add-button:hover {
+            background-color: #ffa221;
+        }
+        /* Styling for the search form */
+        .search-form {
+            text-align: center;
+            margin: 20px;
+        }
+        .search-form input[type="text"], .search-form select {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .search-form button {
+            padding: 10px 20px;
+            background-color: #ffb921;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .search-form button:hover {
+            background-color: #ffa221;
+        }
+        /* Styling for the add button container */
+        .add-button-container {
+            text-align: right;
+            margin: 20px;
+        }
+        /* Styling for highlighted text */
+        .highlight {
+            background-color: yellow;
         }
     </style>
 </head>
@@ -126,25 +176,22 @@
     </ul>
 
     <!-- Button to add a new client -->
-    <div style="text-align: right; margin: 20px;">
-        <button onclick="window.location.href='add_client.php'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+    <div class="add-button-container">
+        <button onclick="window.location.href='add_client.php'" class="add-button">
         Add
         </button>
     </div>
 
     <!-- Search form -->
-    <div style="text-align: center; margin: 20px;">
+    <div class="search-form">
         <form method="GET" action="client.php">
             <input type="text" name="search" placeholder="Search...">
-            <select name="column">
-                <option value="Client_id">Client ID</option>
-                <option value="Lastname">Last Name</option>
-                <option value="First_name">First Name</option>
-                <option value="Phone_number">Phone Number</option>
-                <option value="Email">Email</option>
-                <option value="Address">Address</option>
+            <select name="status">
+                <option value="">All</option>
+                <option value="0">Valid</option>
+                <option value="1">Deleted</option>
             </select>
-            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.3s ease;">
+            <button type="submit">
             Search
             </button>
         </form>
@@ -164,10 +211,16 @@
         <?php
         // Get search parameters
         $search = isset($_GET['search']) ? $_GET['search'] : '';
-        $column = isset($_GET['column']) ? $_GET['column'] : 'Lastname';
+        $status = isset($_GET['status']) ? $_GET['status'] : '';
 
         // Query to select all clients from the database
-        $query = "SELECT * FROM Client WHERE $column LIKE '%$search%' ORDER BY Lastname ASC";
+        $query = "SELECT * FROM Client WHERE 
+        (Client_id LIKE '%$search%' OR First_name LIKE '%$search%' OR Lastname LIKE '%$search%' OR Email LIKE '%$search%' OR Address LIKE '%$search%')";
+        if ($status !== '') {
+            $query .= " AND Status = '$status'";
+        }
+        $query .= " ORDER BY Lastname ASC";
+
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -178,11 +231,11 @@
         while($row = mysqli_fetch_array($result)) {
         ?>
         <tr class="outputs">
-            <td><?php echo $row['Client_id']; ?></td>
-            <td><?php echo $row['Lastname'] . ", " . $row['First_name']; ?></td>
-            <td><?php echo $row['Phone_number']; ?></td>
-            <td><?php echo $row['Email']; ?></td>
-            <td><?php echo $row['Address']; ?></td>
+            <td><?php echo highlight($row['Client_id'], $search); ?></td>
+            <td><?php echo highlight($row['Lastname'] . ", " . $row['First_name'], $search); ?></td>
+            <td><?php echo highlight($row['Phone_number'], $search); ?></td>
+            <td><?php echo highlight($row['Email'], $search); ?></td>
+            <td><?php echo highlight($row['Address'], $search); ?></td>
             <td><?php echo $row['Status'] == 0 ? 'Valid' : 'Deleted'; ?></td>
             <td>
                 <div class="button-container">
