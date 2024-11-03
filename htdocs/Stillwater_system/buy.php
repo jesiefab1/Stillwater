@@ -54,6 +54,7 @@
             padding: 14px 20px;
             display: block;
             transition: background-color 0.3s ease;
+            font-weight: bold;
         }
         .nav-menu li a:hover {
             background-color: #575757;
