@@ -15,6 +15,7 @@
     <title>Document</title>
 
     <style>
+        /* Basic styling for the body */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -50,9 +51,10 @@
             font-weight: bold;
         }
         .nav-menu img {
-            margin-top: 10px;
             margin-bottom: 10px;
-            margin-right: 10px;
+            margin-left: 10px;
+            margin-right: 50px;
+            z-index: 99999;
         }
         .nav-menu li a:hover {
             background-color: #575757;
@@ -66,9 +68,39 @@
             padding: 5px 5px 5px 9px;
             position: absolute;
             top: 10px;
-            left: 25px;
+            left: 3.5%;
             box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
             background-color: #424242;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            margin-top: 13px;
+        }
+        .contents {
+            position: absolute;
+            top: 67px;
+            right: 3.5%;
+            display: none;
+            min-width: 100px;
+            background-color: #575757;
+            z-index: 9999;
+            transition: background-color .8s;
+        }
+        .dropDown .contents a {
+            background-color: #575757;
+            padding-left: 30px;
+            margin-left: 10px;
+        }
+        .dropDown .contents a:hover {
+            background-color: #979797;
+        }
+        .dropDown img {
+            cursor: pointer;
+        }
+        .dropDown:hover .contents {
+            display: inline-block;
+            width: 150px;
         }
         .BG_wrapper {
             position: relative;
@@ -111,15 +143,11 @@
             top: 50%;
             left: 6%;
         }
-        .avatar {
-            width: 40px;
-            height: 40px;
-        }
     </style>
 
 </head>
 <body>
-    <ul class="nav-menu">
+<ul class="nav-menu">
         <div class="nav_wrapper">
             <?php
                 if (!isset($_SESSION['Client_id'])) {
@@ -131,7 +159,13 @@
                 } else {
             ?>
                 <li>
-                    <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar">
+                    <div class="dropDown">
+                        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar" alt="prof-picture">
+                            <div class="contents">
+                                <a href="profile.php">Profile</a>
+                                <a href="log_out.php">Logout</a>
+                            </div>
+                    </div>
                 </li>
             <?php
                 }
@@ -141,6 +175,7 @@
             <li><a href="buy.php">Buy</a></li>
             <li><a href="aboutMe.php" class="active">About Me</a></li>
             <li><a href="Home.php">Home</a></li>
+            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo" alt="Company-Logo">
         </div>
     </ul>
 
@@ -155,8 +190,6 @@
             <img src="https://www.relaxhouse.com.au/blog/wp-content/uploads/2023/12/TELEMMGLPICT000179595798_trans_NvBQzQNjv4Bqjj7NJ3YiIjAb1WHq3sE3uhKttfbwsG9PqG0T37pchKo-1024x640.jpeg">
         </div>
     </div>
-
-        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo">
 
 </body>
 </html>

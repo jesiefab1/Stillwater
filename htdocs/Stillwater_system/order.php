@@ -9,7 +9,7 @@
     if (isset($_SESSION['Client_id'])) {
         $client_id = $_SESSION['Client_id'];
     }
-    $is_logged_in = isset($_SESSION['Client_id']);
+    $noLogin = !isset($_SESSION['Client_id']); // Check if the user is not logged in
     
     if (isset($_SESSION['Client_id'])) {
         $client_name_query = "SELECT First_name, Lastname FROM Client WHERE Client_id = '$client_id'";
@@ -33,18 +33,18 @@
     }
 
     // Handle comment submission
-    if (isset($_SESSION['Client_id'])) {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment'])) {
-            $comment = mysqli_real_escape_string($conn, $_POST['comment']);
-            $client_name = $client_row['First_name'] . ' ' . $client_row['Lastname'];
-            $full_comment = $client_name . ': ' . $comment;
-            $query = "UPDATE Item SET Comments = CONCAT(COALESCE(Comments, ''), '\n', '$full_comment') WHERE Item_number = '$Item_number'";
-            mysqli_query($conn, $query);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment']) && isset($_SESSION['Client_id'])) {
+        $comment = mysqli_real_escape_string($conn, $_POST['comment']);
+        $client_name = $client_row['First_name'] . ' ' . $client_row['Lastname'];
+        $full_comment = $client_name . ': ' . $comment;
+        $query = "UPDATE Item SET Comments = CONCAT(COALESCE(Comments, ''), '\n', '$full_comment') WHERE Item_number = '$Item_number'";
+        mysqli_query($conn, $query);
             
-            // Refresh the page to see the new comment
-            header("Location: " . $_SERVER['REQUEST_URI']);
-            exit();
-        }
+        // Refresh the page to see the new comment
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    } else {
+        $noLogin = true;
     }
 ?>
 
@@ -59,14 +59,22 @@
         function goBack() {
             window.history.back(); // Go back to the previous page in the browser history
         }
-        
-        function checkLogin() {
+            // Set a JavaScript variable based on the PHP login status
+        var isLoggedIn = <?php echo json_encode(!$noLogin); ?>; // true if logged in, false otherwise
+
+        function handleCommentSubmission(event) {
             if (!isLoggedIn) {
+                event.preventDefault(); // Prevent form submission
                 alert("You must be logged in to submit a comment."); // Alert the user
-                window.location.href = "log_in.php"; // Redirect to the login page
-                return false; // Prevent form submission
+                window.location.href = 'log_in.php'; // Redirect to the login page
             }
-            return true; // Allow form submission
+        }
+
+        function logInRequired() {
+            if (!isLoggedIn) {
+                alert("You must be logged in to buy an Item"); // Alert the user
+                window.location.href = 'log_in.php'; // Redirect to the login page
+            }
         }
     </script>
 
@@ -144,7 +152,7 @@
 <div class="item-card">
     <div class="buy-button-container">
         <form method="POST">
-            <button type="submit" name="buy">Buy</button>
+            <button type="button" onclick="logInRequired()" name="buy">Buy</button>
         </form>
     </div>
     
@@ -175,8 +183,6 @@
 
         echo "<h3>Item purchased successfully!</h3>";
 
-    } else {
-
     }
     ?>
     <h3><?php echo htmlspecialchars($row['Item_name'] ?? ''); ?></h3>
@@ -188,7 +194,7 @@
     <div class="comment-form">
         <form method="POST">
             <textarea name="comment" rows="4" placeholder="Add your comment here..."></textarea>
-            <button type="submit" onclick="checkLogin()">Submit Comment</button>
+            <button type="submit" onclick="handleCommentSubmission(event)">Submit Comment</button>
         </form>
     </div>
 </div>

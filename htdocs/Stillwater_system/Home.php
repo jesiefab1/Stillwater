@@ -55,9 +55,10 @@
             font-weight: bold;
         }
         .nav-menu img {
-            margin-top: 10px;
             margin-bottom: 10px;
-            margin-right: 15px;
+            margin-left: 10px;
+            margin-right: 50px;
+            z-index: 99999;
         }
         .nav-menu li a:hover {
             background-color: #575757;
@@ -71,13 +72,40 @@
             padding: 5px 5px 5px 9px;
             position: absolute;
             top: 10px;
-            left: 25px;
+            left: 3.5%;
             box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
             background-color: #424242;
         }
         .avatar {
             width: 40px;
             height: 40px;
+            margin-top: 13px;
+        }
+        .dropDown .contents {
+            position: absolute;
+            top: 67px;
+            right: 3.5%;
+            display: none;
+            min-width: 100px;
+            background-color: #575757;
+            transition: background-color .8s;
+            z-index: 9999;
+        }
+        .dropDown .contents a {
+            background-color: #575757;
+            padding-left: 30px;
+            margin-left: 10px;
+            
+        }
+        .dropDown .contents a:hover {
+            background-color: #979797;
+        }
+        .dropDown img {
+            cursor: pointer;
+        }
+        .dropDown:hover .contents {
+            display: inline-block;
+            width: 150px;
         }
         .poster {
             border: 1px solid #333;
@@ -96,18 +124,6 @@
             background-color: #575757;
             transition: background-color .8s;
         }
-        .contents a {
-            background-color: #575757;
-        }
-        .contents a:hover {
-            background-color: white;
-        }
-        .dropDown img {
-            cursor: pointer;
-        }
-        .dropDown:hover .contents {
-            display: block;
-        }
     </style>
 
 </head>
@@ -125,7 +141,7 @@
             ?>
                 <li>
                     <div class="dropDown">
-                        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar">
+                        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar" alt="prof-picture">
                             <div class="contents">
                                 <a href="profile.php">Profile</a>
                                 <a href="log_out.php">Logout</a>
@@ -140,14 +156,13 @@
             <li><a href="buy.php">Buy</a></li>
             <li><a href="aboutMe.php">About Me</a></li>
             <li><a href="Home.php" class="active">Home</a></li>
+            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo" alt="Company-Logo">
         </div>
     </ul>
 
     <div class="poster">
-        <>
-    </div>
 
-    <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo">
+    </div>
 
 </body>
 </html>

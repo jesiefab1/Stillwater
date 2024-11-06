@@ -9,11 +9,11 @@
 
     // Store the previous page URL in the session
     if (!isset($_SESSION['previous_page'])) {
-    $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? 'default_page.php'; // Fallback to a default page
-    $_SESSION['previous_page'] = 'previous_page.php'; // Set this to the actual previous page URL
-    $previous_page = isset($_SESSION['previous_page']) ? $_SESSION['previous_page'] : 'default_page.php';
+        // Use HTTP_REFERER if available, otherwise fallback to 'Home.php'
+        $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? 'Home.php';
     }
 
+    $previous_page = $_SESSION['previous_page'];
 
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -22,19 +22,18 @@
         $password = $_POST['password'];
 
         // Prepare the SQL query to validate email and password
-        $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password'";
+        $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password' AND Status = '0'";
         $result = mysqli_query($conn, $query);
 
         // Check if the query returned any rows
         if (mysqli_num_rows($result) > 0) {
+            header('Location: ' . $_SESSION['previous_page']);
             // Email and password are valid
             $row = mysqli_fetch_assoc($result);
             $_SESSION['Client_id'] = $row['Client_id'];
             $_SESSION['First_name'] = $row['First_name'];
             $_SESSION['Lastname'] = $row['Lastname'];// Store Client_id in session
-            // Redirect to the previous page
-            header("Location: " . $_SESSION['previous_page']);
-            exit();
+            
 
         } else {
             $failed = true;
@@ -201,7 +200,7 @@
             <label for="password">Password:</label>
             <input type="password" name="password" required>
 
-            <button type="submit" name="submit" id="previousPage">Enter Account</button>
+            <button type="submit" onclick="proceed()" name="submit">Enter Account</button>
         </form>
         <div class="button-wrapper">
             <button onclick="window.location.href='create_account.php'">
