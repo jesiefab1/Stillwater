@@ -3,16 +3,12 @@
     session_start();
 
     include ('db_connection.php');
-
-    // Check if the user is logged in
-    if (!isset($_SESSION['Client_id'])) {
-        echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
-        echo "<script>window.location.href = 'log_in.php';</script>";
-        exit;
-    } 
     
     // Get the Client_id from the session
-    $client_id = $_SESSION['Client_id'];
+    if (isset($_SESSION['Client_id'])) {
+        $client_id = $_SESSION['Client_id'];
+    }
+
 
     function moreButton($Item_number, $Client_id) {
         echo '<button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="moreButton">
@@ -34,6 +30,9 @@
             margin: 0;
             padding: 0;
         }
+        .nav_wrapper {
+            margin-left: 16%;
+        }
         .nav-menu {
             list-style-type: none;
             padding: 0;
@@ -46,7 +45,7 @@
             float: right;
         }
         .nav-menu li {
-            float: left;
+            float: right;
         }
         .nav-menu li a {
             color: white;
@@ -54,13 +53,35 @@
             padding: 14px 20px;
             display: block;
             transition: background-color 0.3s ease;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 10px;
             font-weight: bold;
+        }
+        .nav-menu img {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 15px;
         }
         .nav-menu li a:hover {
             background-color: #575757;
         }
         .nav-menu li a.active {
             background-color: #4CAF50;
+        }
+        #logo {
+            width: 15%;
+            height: 13%;
+            padding: 5px 5px 5px 9px;
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
+            background-color: #424242;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
         }
         .logout-container {
             margin-right: 20px;
@@ -131,19 +152,45 @@
     </script>
 </head>
 <body>
-    <ul class="nav-menu">
-        <li><a href="buy.php" class="active">Buy</a></li>
-        <li><a href="sell.php">Sell</a></li>
-        <li><a href="storage.php">Your Items</a></li>
-        <li class="User"><a href="log_out.php">Administrator Side</a></li>
+<ul class="nav-menu">
+        <div class="nav_wrapper">
+            <?php
+                if (!isset($_SESSION['Client_id'])) {
+            ?>
+                <li>
+                    <a href="log_in.php">Login</a>
+                </li>
+            <?php
+                } else {
+            ?>
+                <li>
+                    <div class="dropDown">
+                        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar">
+                            <div class="contents">
+                                <a href="profile.php">Profile</a>
+                                <a href="log_out.php">Logout</a>
+                            </div>
+                    </div>
+                </li>
+            <?php
+                }
+            ?>
+            <li><a href="storage.php">My Items</a></li>
+            <li><a href="sell.php">Sell</a></li>
+            <li><a href="buy.php" class="active">Buy</a></li>
+            <li><a href="aboutMe.php">About Me</a></li>
+            <li><a href="Home.php">Home</a></li>
+        </div>
     </ul>
-    <div class="logout-container">
-        <button onclick="window.location.href='log_out.php'" class="logout">Logout</button>
-    </div>
 
     <div class="item-container">
         <?php
-        $query = "SELECT * FROM Item WHERE Client_id != '$client_id' AND Is_sold = '0'";
+            if (isset($_SESSION['Client_id'])) {
+                $query = "SELECT * FROM Item WHERE Client_id != '$client_id' AND Is_sold = '0'";
+            } else {
+                $query = "SELECT * FROM Item WHERE Is_sold = '0'";
+            }
+
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -161,8 +208,11 @@
         </div>
 
         <?php
-        }
+            }
         ?>
     </div>
+
+    <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo">
+
 </body>
 </html>

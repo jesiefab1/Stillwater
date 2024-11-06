@@ -5,6 +5,16 @@
     // Include the database connection file
     include ('db_connection.php');
 
+    $failed = false;
+
+    // Store the previous page URL in the session
+    if (!isset($_SESSION['previous_page'])) {
+    $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? 'default_page.php'; // Fallback to a default page
+    $_SESSION['previous_page'] = 'previous_page.php'; // Set this to the actual previous page URL
+    $previous_page = isset($_SESSION['previous_page']) ? $_SESSION['previous_page'] : 'default_page.php';
+    }
+
+
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get form data
@@ -22,14 +32,13 @@
             $_SESSION['Client_id'] = $row['Client_id'];
             $_SESSION['First_name'] = $row['First_name'];
             $_SESSION['Lastname'] = $row['Lastname'];// Store Client_id in session
-            echo "<script>alert('Login successful.')</script>";
-            $success = true;
+            // Redirect to the previous page
+            header("Location: " . $_SESSION['previous_page']);
+            exit();
+
         } else {
-            // Email or password is invalid
-            echo "<script>alert('Invalid Email or Password.')</script>";
-            $success = false;
+            $failed = true;
         }
-        
     }
 ?>
 <!DOCTYPE html>
@@ -37,17 +46,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Client</title>
+    <title>Add Client</title> 
 
     <script>
-
-        // JavaScript to redirect to the client page if the insertion was successful
-        <?php if ($success): ?>
-        window.onload = function() {
-            window.location.href = "buy.php";
-        };
-        <?php endif; ?>
-
+        function goBack() {
+            window.history.back()
+        }
     </script>
 
     <style>
@@ -119,16 +123,15 @@
             margin-bottom: 5px;
             color: #555;
         }
-        input[type="text"],
         input[type="email"],
         input[type="password"] {
-            width: 95%;
+            width: 94%;
             padding: 8px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        input[type="submit"] {
+        button[type="submit"] {
             width: 100%;
             padding: 10px;
             background-color: #28a745;
@@ -138,9 +141,27 @@
             font-size: 16px;
             cursor: pointer;
         }
-        input[type="submit"]:hover {
+        button[type="submit"]:hover {
             background-color: #218838;
         }
+        span {
+            color: #fa3c5c;
+            background-color: #ffc0cb;
+            padding-right: 16.5%;
+            padding-left: 16.5%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-radius: 5px;
+        }
+        <?php
+            if ($failed) {
+        ?>
+                form {
+                    margin-top: 15px;
+                }
+        <?php
+            }
+        ?>
         
     </style>
 
@@ -148,7 +169,7 @@
 <body>
 
     <div class="Back">
-        <button onclick="window.location.href='client.php'">Back</button>
+        <button onclick="goBack()">Back</button>
     </div>
 
     <script>
@@ -165,6 +186,13 @@
 
     <div class="container">
         <h1>Log In</h1>
+
+        <?php 
+            if ($failed) {
+                echo "<span>Incorrect Email or Password</span>";
+            }
+        ?>
+
         <form action=" " method="POST">
 
             <label for="email">Email:</label>
@@ -173,7 +201,7 @@
             <label for="password">Password:</label>
             <input type="password" name="password" required>
 
-            <input type="submit" name="submit" value="Enter Account">
+            <button type="submit" name="submit" id="previousPage">Enter Account</button>
         </form>
         <div class="button-wrapper">
             <button onclick="window.location.href='create_account.php'">

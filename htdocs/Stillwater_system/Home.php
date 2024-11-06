@@ -12,6 +12,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap" rel="stylesheet">
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous">
+    </script>
     <title>Document</title>
 
     <style>
@@ -52,7 +57,7 @@
         .nav-menu img {
             margin-top: 10px;
             margin-bottom: 10px;
-            margin-right: 10px;
+            margin-right: 15px;
         }
         .nav-menu li a:hover {
             background-color: #575757;
@@ -70,50 +75,38 @@
             box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
             background-color: #424242;
         }
-        .BG_wrapper {
-            position: relative;
-            width: auto;
-            height: 500px;
-        }
-        .BG {
-            position: absolute;
-            right: 0px;
-            height: 100%;
-            width: 50%;
-        }
-        .BG img {
-            width: 100%;
-            height: 100%;
-            opacity: .8;
-        }
-        .BG_color {
-            position: absolute;
-            background-color: #265c99;
-            height: 100%;
-            width: 100%;
-            opacity: .3;
-        }
-        .Slogan {
-            font-family: "Signika Negative", sans-serif;
-            position: absolute;
-            left: 5%;
-            top: 30%;
-            width: 50%;
-        }
-        .Slogan > p {
-            font-size: 35px;
-            font-weight: bold;
-        }
-        .desc {
-            position: absolute;
-            width: 40%;
-            font-size: 20px;
-            top: 50%;
-            left: 6%;
-        }
         .avatar {
             width: 40px;
             height: 40px;
+        }
+        .poster {
+            border: 1px solid #333;
+            width: 80%;
+            height: 300px;
+            position: relative;
+            left: 10%;
+            top: 50px;
+        }
+        .contents {
+            float: right;
+            position: absolute;
+            display: none;
+            min-width: 100px;
+            right: 0%;
+            background-color: #575757;
+            transition: background-color .8s;
+        }
+        .contents a {
+            background-color: #575757;
+        }
+        .contents a:hover {
+            background-color: white;
+        }
+        .dropDown img {
+            cursor: pointer;
+        }
+        .dropDown:hover .contents {
+            display: block;
         }
     </style>
 
@@ -131,7 +124,13 @@
                 } else {
             ?>
                 <li>
-                    <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar">
+                    <div class="dropDown">
+                        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar">
+                            <div class="contents">
+                                <a href="profile.php">Profile</a>
+                                <a href="log_out.php">Logout</a>
+                            </div>
+                    </div>
                 </li>
             <?php
                 }
@@ -144,8 +143,11 @@
         </div>
     </ul>
 
+    <div class="poster">
+        <>
+    </div>
 
-        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo">
+    <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="logo">
 
 </body>
 </html>
