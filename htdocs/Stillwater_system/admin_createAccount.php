@@ -12,14 +12,12 @@
     // Check if the form is submitted
     if(isset($_POST['submit'])) {
 
-        // Get form data
-        $username = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
         $status = 0;
 
         // Prepare the SQL query
-        $query = "INSERT INTO Admin_users (Username, Email, Password, Status) VALUES ('$username', '$email', '$password', '$status')";
+        $query = "INSERT INTO Admin_users (Email, Password, Status) VALUES ('$email', '$password', '$status')";
         
         // Execute the SQL query
         if ($result = mysqli_query($conn, $query)) {
@@ -50,7 +48,7 @@
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
-            window.location.href = "buy.php";
+            window.location.href = "client.php";
         };
         <?php endif; ?>
     </script>
@@ -134,9 +132,6 @@
     <div class="container">
         <h1>Signup</h1>
         <form action=" " method="POST">
-            <label for="name">Username:</label>
-            <input type="text" name="username" required>
-
             <label for="email">Email:</label>
             <input type="email" name="email" required>
 

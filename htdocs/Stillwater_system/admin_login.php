@@ -10,6 +10,16 @@
         exit;
     }
 
+    $failed = false;
+
+    // Store the previous page URL in the session
+    if (!isset($_SESSION['previous_page'])) {
+        // Use HTTP_REFERER if available, otherwise fallback to 'Home.php'
+        $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? 'Home.php';
+    }
+
+    $previous_page = $_SESSION['previous_page'];
+
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get form data
@@ -17,7 +27,7 @@
         $password = $_POST['password'];
 
         // Prepare the SQL query to validate email and password
-        $query = "SELECT * FROM Admin_users WHERE Email = '$email' AND Password = '$password'";
+        $query = "SELECT * FROM Admin_users WHERE Email = '$email' AND Password = '$password' AND Status = '0'";
         $result = mysqli_query($conn, $query);
 
         // Check if the query returned any rows
@@ -29,8 +39,8 @@
             $success = true;
         } else {
             // Email or password is invalid
-            echo "<script>alert('Invalid Email or Password.')</script>";
             $success = false;
+            $failed = true;
         }
         
     }
@@ -43,14 +53,12 @@
     <title>Add Client</title>
 
     <script>
-
         // JavaScript to redirect to the client page if the insertion was successful
         <?php if ($success): ?>
         window.onload = function() {
             window.location.href = "client.php";
         };
         <?php endif; ?>
-
     </script>
 
     <style>
@@ -63,6 +71,24 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+        }
+        .Back {
+            text-align: right;
+        }
+        .Back > button {
+            background-color: #ffb921;
+            color: white;
+            padding: 14px 20px;
+            margin: 16px 8px;
+            border: none;
+            cursor: pointer;
+            width: 100px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .Back > button:hover {
+            background-color: #ffa221;
+            transform: scale(1.05);
         }
         .container {
             background-color: #fff;
@@ -107,7 +133,7 @@
         input[type="text"],
         input[type="email"],
         input[type="password"] {
-            width: 95%;
+            width: 94%;
             padding: 8px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
@@ -126,11 +152,33 @@
         input[type="submit"]:hover {
             background-color: #ffa221;
         }
-        
+        span {
+            color: #fa3c5c;
+            background-color: #ffc0cb;
+            padding-right: 16.5%;
+            padding-left: 16.5%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-radius: 5px;
+        }
+        <?php
+            if ($failed) {
+        ?>
+                form {
+                    margin-top: 15px;
+                }
+        <?php
+            }
+        ?>
     </style>
 
 </head>
 <body>
+
+    <div class="Back">
+        <button onclick="window.history.back()">Back</button>
+    </div>
+
 
     <script>
         // JavaScript to add hover effects to the add button
@@ -146,6 +194,13 @@
 
     <div class="container">
         <h1>Log In</h1>
+
+        <?php 
+            if ($failed) {
+                echo "<span>Incorrect Email or Password</span>";
+            }
+        ?>
+
         <form action=" " method="POST">
 
             <label for="email">Email:</label>

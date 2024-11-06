@@ -4,16 +4,16 @@
     // Include the database connection file
     include ('db_connection.php');
 
+    if (isset($_SESSION['Client_id'])) {
+        header("Location: Home.php");
+        exit;
+    }
+
     // Check if the form is submitted
     if(isset($_POST['submit'])) {
 
-        // Get form data
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $phone = $_POST['phone'];
-        $address = $_POST['address'];
         $status = 0;
 
         // Prepare the SQL query
@@ -154,25 +154,13 @@
 
     <div class="container">
         <h1>Signup</h1>
-        <form action=" " method="POST">
-            <label for="name">First Name:</label>
-            <input type="text" name="first_name" required>
-
-            <label for="name">Last Name:</label>
-            <input type="text" name="last_name" required>
-            
+        <form action=" " method="POST">  
             <label for="email">Email:</label>
             <input type="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" name="password" required>
-            
-            <label for="phone">Phone:</label>
-            <input type="text" name="phone" required>
-            
-            <label for="address">Address:</label>
-            <input type="text" name="address" required>
-            
+        
             <input type="submit" name="submit" value="Create Account">
         </form>
         <div class="button-wrapper">

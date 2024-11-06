@@ -4,19 +4,18 @@
 
     include ('db_connection.php');
 
-
     // Get the Client_id from the session
     if (isset($_SESSION['Client_id'])) {
         $client_id = $_SESSION['Client_id'];
+    } else {
+        $noLogin = !isset($_SESSION['Client_id']); // Check if the user is not logged in
     }
-    $noLogin = !isset($_SESSION['Client_id']); // Check if the user is not logged in
     
     if (isset($_SESSION['Client_id'])) {
-        $client_name_query = "SELECT First_name, Lastname FROM Client WHERE Client_id = '$client_id'";
+        $client_name_query = "SELECT First_name, Lastname, Email FROM Client WHERE Client_id = '$client_id'";
         $client_result = mysqli_query($conn, $client_name_query);
         $client_row = mysqli_fetch_assoc($client_result);
     }
-
     
     // Check if Client_id is set in the URL
     if (isset($_GET['Item_number'], $_GET['Client_id'])) {
@@ -32,20 +31,27 @@
         $row = mysqli_fetch_assoc($result);
     }
 
+    $commentCondition = $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment']) && isset($_SESSION['Client_id']);
+
     // Handle comment submission
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment']) && isset($_SESSION['Client_id'])) {
+    if ($commentCondition) {     
         $comment = mysqli_real_escape_string($conn, $_POST['comment']);
-        $client_name = $client_row['First_name'] . ' ' . $client_row['Lastname'];
+        $client_name = (empty($client_row['First_name']) && empty($client_row['Lastname'])) 
+        ? $client_row['Email']
+        :  $client_row['First_name'] . ' ' . $client_row['Lastname'];
+         
         $full_comment = $client_name . ': ' . $comment;
-        $query = "UPDATE Item SET Comments = CONCAT(COALESCE(Comments, ''), '\n', '$full_comment') WHERE Item_number = '$Item_number'";
+        $date = date('Y-m-d H:i:s');
+        $query = "UPDATE Item 
+        SET Comments = CONCAT(COALESCE(Comments, ''), '\n', '$full_comment'),
+            Date_of_comments = '$date' 
+            WHERE Item_number = '$Item_number'";
         mysqli_query($conn, $query);
-            
-        // Refresh the page to see the new comment
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit();
+        echo"<script>window.location.href='$_SERVER[REQUEST_URI]'</script>";
     } else {
         $noLogin = true;
     }
+    
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +66,7 @@
             window.history.back(); // Go back to the previous page in the browser history
         }
             // Set a JavaScript variable based on the PHP login status
-        var isLoggedIn = <?php echo json_encode(!$noLogin); ?>; // true if logged in, false otherwise
+            let isLoggedIn = <?php echo isset($_SESSION['Client_id']) ? 'true' : 'false'; ?>;
 
         function handleCommentSubmission(event) {
             if (!isLoggedIn) {
@@ -74,6 +80,9 @@
             if (!isLoggedIn) {
                 alert("You must be logged in to buy an Item"); // Alert the user
                 window.location.href = 'log_in.php'; // Redirect to the login page
+                return false;
+            } else {
+                return true;
             }
         }
     </script>
@@ -152,7 +161,7 @@
 <div class="item-card">
     <div class="buy-button-container">
         <form method="POST">
-            <button type="button" onclick="logInRequired()" name="buy">Buy</button>
+            <button type="submit" onclick="logInRequired()" name="buy">Buy</button>
         </form>
     </div>
     
@@ -189,10 +198,10 @@
     <p><strong>Description:</strong> <?php echo htmlspecialchars($row['Item_description'] ?? ''); ?></p>
     <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'] ?? 0, 2); ?></p>
     <p><strong>Condition:</strong> <?php echo htmlspecialchars($row['Condition'] ?? ''); ?></p>
-    <p><strong>Comments:</strong> <?php echo nl2br(htmlspecialchars($row['Comments'] ?? '')); ?></p>
+    <p><strong>Comments:</strong> <?php echo nl2br($row['Comments'] ?? ''). " " . nl2br(htmlspecialchars($row['Date_of_comments'] ?? ''))?></p><br>
 
     <div class="comment-form">
-        <form method="POST">
+        <form method="POST" onsubmit="return handleCommentSubmission(event)">
             <textarea name="comment" rows="4" placeholder="Add your comment here..."></textarea>
             <button type="submit" onclick="handleCommentSubmission(event)">Submit Comment</button>
         </form>

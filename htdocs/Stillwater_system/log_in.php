@@ -5,6 +5,11 @@
     // Include the database connection file
     include ('db_connection.php');
 
+    if (isset($_SESSION['Client_id'])) {
+        header("Location: Home.php");
+        exit;
+    }
+
     $failed = false;
 
     // Store the previous page URL in the session
@@ -49,7 +54,7 @@
 
     <script>
         function goBack() {
-            window.history.back()
+            window.history.back();
         }
     </script>
 
@@ -200,7 +205,7 @@
             <label for="password">Password:</label>
             <input type="password" name="password" required>
 
-            <button type="submit" onclick="proceed()" name="submit">Enter Account</button>
+            <button type="submit" name="submit">Enter Account</button>
         </form>
         <div class="button-wrapper">
             <button onclick="window.location.href='create_account.php'">

@@ -84,12 +84,12 @@
             display: none;
             min-width: 100px;
             background-color: #575757;
-            z-index: 9999;
+            z-index: 99999;
             transition: background-color .8s;
         }
         .dropDown .contents a {
             background-color: #575757;
-            padding-left: 30px;
+            padding-left: 10px;
             margin-left: 10px;
         }
         .dropDown .contents a:hover {
@@ -163,6 +163,7 @@
                         <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/defaultAvatar.png?raw=true" class="avatar" alt="prof-picture">
                             <div class="contents">
                                 <a href="profile.php">Profile</a>
+                                <a href="admin_login.php">Administrator</a>
                                 <a href="log_out.php">Logout</a>
                             </div>
                     </div>
