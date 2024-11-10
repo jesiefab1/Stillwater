@@ -3,11 +3,13 @@ require_once 'vendor/autoload.php';
 
 // init configuration
 $clientID = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com';
+$clientSecret = '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';
 $redirectUri = 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/log_in.php';
 
 // create Client Request to access Google API
 $client = new Google_Client();
 $client->setClientId($clientID);
+$client->setClientSecret($clientSecret);
 $client->setRedirectUri($redirectUri);
 $client->addScope("email");
 $client->addScope("profile");
@@ -18,6 +20,7 @@ if (isset($_GET['code'])) {
   $client->setAccessToken($token['access_token']);
 
   // get profile info
+  $google_oauth = new Google\Service\Oauth2($client);
   $google_account_info = $google_oauth->userinfo->get();
   $email =  $google_account_info->email;
   $name =  $google_account_info->name;
