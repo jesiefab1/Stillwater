@@ -5,6 +5,8 @@
     // Include the database connection file
     include ('db_connection.php');
 
+    include ('config.php');
+
     if (isset($_SESSION['Client_id'])) {
         header("Location: Home.php");
         exit;
@@ -249,25 +251,6 @@
             </form>
         </div>
         </div>
-    </div>
-    <div
-
-        <!-- Right -->
-        <div>
-        <a href="#!" class="text-white me-4">
-            <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="#!" class="text-white me-4">
-            <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#!" class="text-white me-4">
-            <i class="fab fa-google"></i>
-        </a>
-        <a href="#!" class="text-white">
-            <i class="fab fa-linkedin-in"></i>
-        </a>
-        </div>
-        <!-- Right -->
     </div>
     </section>
 </body>
