@@ -62,6 +62,12 @@
         function goBack() {
             window.history.back();
         }
+
+        // Assuming you have already loaded the Google API and initialized it
+        document.getElementById('googleSignInButton').addEventListener('click', function() {
+            // Call the Google Sign-In function here
+            google.accounts.id.prompt(); // This will show the Google Sign-In prompt
+        });
         
         function handleCredentialResponse(response) {
             const xhr = new XMLHttpRequest();
@@ -88,7 +94,12 @@
                 document.getElementById("g_id_signin"),
                 { theme: "outline", size: "large" }
             );
-        };
+        }
+
+        // This function should be called when the Google Sign-In is successful
+        function onSignIn(credential) {
+            handleCredentialResponse(credential);
+        }
     </script>
 
     <style>
@@ -223,7 +234,7 @@
             class="img-fluid" alt="Sample image">
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-            <form>
+            <form method="POST" action="">
             <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
                 <p class="lead fw-normal mb-0 me-3">Sign in with</p>
                 <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1 rounded-circle">
@@ -234,7 +245,7 @@
                 <i class="fab fa-twitter"></i>
                 </button>
 
-                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1 rounded-circle">
+                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1 rounded-circle" id="googleSignInButton">
                 <i class='fab fa-google'></i>
                 </button>
             </div>

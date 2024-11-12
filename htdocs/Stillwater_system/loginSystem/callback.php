@@ -3,9 +3,7 @@ session_start();
 
 require 'libs/google-api-php-client/vendor/autoload.php';
 require 'config.php';
-require 'db_connection.php';
-
-use Google\Client;
+require '../db_connection.php';
 
 if (isset($_POST['id_token'])) {
     // Include the Google API Client Library
@@ -43,6 +41,7 @@ if (isset($_POST['id_token'])) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid ID token']);
     }
 } else {
+        header("Location: log_in.php");
     echo json_encode(['status' => 'no_token']);
 }
 ?>
