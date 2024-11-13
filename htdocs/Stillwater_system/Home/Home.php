@@ -5,12 +5,7 @@
     // Get the Client_id from the session
     if (isset($_SESSION['Client_id'])) {
         $client_id = $_SESSION['Client_id'];
-    }
 
-    function moreButton($Item_number, $Client_id) {
-        echo '<button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="btn btn-outline-dark mt-auto">
-        More
-        </button>';
     }
 
 ?>
@@ -40,10 +35,12 @@
             window.addEventListener("scroll", function(){
                 var nav = document.querySelector("nav");
                 nav.classList.toggle("bg-black", window.scrollY > 0);
-            })
-            function openOrderPopup(Item_number, Client_id) {
-            var url = '../Orderlist/order.php?Item_number=' + Item_number + '&Client_id=' + Client_id;
-            window.open(url, 'OrderPopup');
+            }
+            function openOrder(Item_number, Client_id) {
+                // Construct the URL with query parameters
+                const url = `../Orderlist/order.php?Item_number=${Item_number}&Client_id=${Client_id}`;
+                // Redirect to the order page
+                window.location.href = url;
             }
         </script>
     </head>
@@ -139,7 +136,7 @@
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="btn btn-outline-dark mt-auto">More</button></div>
+                                <div class="text-center"><button onclick="openOrder('<?php echo $row['Item_number']; ?>', '<?php echo $row['Client_id']; ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
                             </div>
                         </div>
                     </div>

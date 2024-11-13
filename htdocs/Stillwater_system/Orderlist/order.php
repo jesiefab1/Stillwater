@@ -2,7 +2,7 @@
     // Start the session
     session_start();
 
-    include ('db_connection.php');
+    include ('../db_connection.php');
 
     // Get the Client_id from the session
     if (isset($_SESSION['Client_id'])) {
