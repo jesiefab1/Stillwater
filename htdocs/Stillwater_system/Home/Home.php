@@ -7,7 +7,11 @@
         $client_id = $_SESSION['Client_id'];
     }
 
-
+    function moreButton($Item_number, $Client_id) {
+        echo '<button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="btn btn-outline-dark mt-auto">
+        More
+        </button>';
+    }
 
 ?>
 
@@ -37,6 +41,10 @@
                 var nav = document.querySelector("nav");
                 nav.classList.toggle("bg-black", window.scrollY > 0);
             })
+            function openOrderPopup(Item_number, Client_id) {
+            var url = '../Orderlist/order.php?Item_number=' + Item_number + '&Client_id=' + Client_id;
+            window.open(url, 'OrderPopup');
+            }
         </script>
     </head>
     <body>
@@ -131,7 +139,7 @@
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                                <div class="text-center"><button onclick="openOrderPopup(' . $Item_number . ', ' . $Client_id . ')" class="btn btn-outline-dark mt-auto">More</button></div>
                             </div>
                         </div>
                     </div>
