@@ -2,7 +2,7 @@
     session_start();
 
     // Include the database connection file
-    include ('db_connection.php');
+    include ('../db_connection.php');
 
     if (isset($_SESSION['Client_id'])) {
         header("Location: Home.php");

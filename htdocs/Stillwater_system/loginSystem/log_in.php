@@ -7,7 +7,6 @@
 
     require 'libs/google-api-php-client/vendor/autoload.php';
 
-
     if (isset($_SESSION['Client_id'])) {
         header("Location: ../Home/Home.php");
         exit();
@@ -23,18 +22,14 @@
 
     $previous_page = $_SESSION['previous_page'];
 
-    header("Access-Control-Allow-Origin: *"); // Allow all origins (for testing)
-    header("Access-Control-Allow-Methods: POST"); // Allow POST requests
-    header("Access-Control-Allow-Headers: Content-Type"); // Allow specific headers
-
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get form data
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        $email1 = $_POST['email'];
+        $password1 = $_POST['password'];
 
         // Prepare the SQL query to validate email and password
-        $query = "SELECT * FROM Client WHERE Email = '$email' AND Password = '$password' AND Status = '0'";
+        $query = "SELECT * FROM Client WHERE Email = '$email1' AND Password = '$password1' AND Status = '0'";
         $result = mysqli_query($conn, $query);
 
         // Check if the query returned any rows
@@ -71,39 +66,65 @@
             // Validate the Id token
             $userInfo = validationAndDecodeIdToken($idToken);
             $_SESSION["userInfo"] = $userInfo;
-        
-        
+
             if ($userInfo) {
                 $first_name = $userInfo['given_name'];
                 $last_name = $userInfo['family_name'];
                 $email = $userInfo['email'];
-                $password = $userInfo['password'];
                 $_SESSION["ReceivedEmail"] = $email;
-        
+            
                 // Check if the user already exists
-                $checkQuery = "SELECT * FROM Client WHERE Email = $email AND Status = 0";
-                $checkStmt = $conn->prepare($checkQuery);
-                $checkStmt->bind_param("s", $email);
-                $checkStmt->execute();
-                $result = $checkStmt->get_result();
-        
-                if ($result->num_rows > 0) {
-                    echo "User  already exists.";
-                } else {
-                    // Insert user data into the database
-                    $stmt = $conn->prepare("INSERT INTO Client (First_name, Lastname, Email) VALUES ($first_name, $last_name, '$email')");
-                    $stmt->bind_param("s", $email);
-        
-                    if ($stmt->execute()) {
-                        echo "New record created successfully";
+                $checkQuery = "SELECT * FROM Client WHERE Email = ? AND Status = 0";
+                $stmtCheck = $conn->prepare($checkQuery);
+                $stmtCheck->bind_param("s", $email);
+            
+                if ($stmtCheck->execute()) {
+                    $checkResult = $stmtCheck->get_result();
+                    $rowCheck = $checkResult->fetch_array(MYSQLI_ASSOC);
+                    
+                    if ($rowCheck) {
+                        // User already exists
+                        $_SESSION['Client_id'] = $rowCheck['Client_id'];
+                        header('Location: ../Home/Home.php'); // Redirect to home page
+                        exit();
                     } else {
-                        echo "Error: " . $stmt->error;
+                        // Prepare the insert query
+                        $query1 = "INSERT INTO Client (First_name, Lastname, Email, Status) VALUES (?, ?, ?, 0)";
+                        $stmtInsert = $conn->prepare($query1);
+                        $stmtInsert->bind_param("sss", $first_name, $last_name, $email);
+            
+                        // Execute the insert query
+                        if ($stmtInsert->execute()) {
+                            // Prepare the select query to get the newly inserted user
+                            $querySelect = "SELECT * FROM Client WHERE Email = ? AND Status = '0'";
+                            $stmtSelect = $conn->prepare($querySelect);
+                            $stmtSelect->bind_param("s", $email);
+            
+                            if ($stmtSelect->execute()) {
+                                $resultSelect = $stmtSelect->get_result();
+                                $rowSelect = $resultSelect->fetch_assoc();
+                                $_SESSION['Client_id'] = $rowSelect['Client_id'];
+                                header('Location: ../Home/Home.php'); // Redirect to home page
+                                exit();
+                            } else {
+                                echo "Error selecting data: " . $stmtSelect->error;
+                            }
+                        } else {
+                            echo "Error inserting data: " . $stmtInsert->error;
+                        }
                     }
-        
-                    $stmt->close();
+                } else {
+                    echo "Error executing check query: " . $stmtCheck->error;
                 }
-        
-                $checkStmt->close();
+            
+                // Close statements
+                $stmtCheck->close();
+                if (isset($stmtInsert)) {
+                    $stmtInsert->close();
+                }
+                if (isset($stmtSelect)) {
+                    $stmtSelect->close();
+                }
             } else {
                 echo "Failed to decode ID token";
             }
