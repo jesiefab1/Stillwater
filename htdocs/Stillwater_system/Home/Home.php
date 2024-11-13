@@ -35,7 +35,7 @@
             window.addEventListener("scroll", function(){
                 var nav = document.querySelector("nav");
                 nav.classList.toggle("bg-black", window.scrollY > 0);
-            }
+            })
             function openOrder(Item_number, Client_id) {
                 // Construct the URL with query parameters
                 const url = `../Orderlist/order.php?Item_number=${Item_number}&Client_id=${Client_id}`;
@@ -136,7 +136,7 @@
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><button onclick="openOrder('<?php echo $row['Item_number']; ?>', '<?php echo $row['Client_id']; ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
+                                <div class="text-center"><button onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
                             </div>
                         </div>
                     </div>
