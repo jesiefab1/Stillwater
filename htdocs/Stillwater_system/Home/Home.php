@@ -32,6 +32,12 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        <script>
+            window.addEventListener("scroll", function(){
+                var nav = document.querySelector("nav");
+                nav.classList.toggle("bg-black", window.scrollY > 0);
+            })
+        </script>
     </head>
     <body>
         <!-- Navigation-->
@@ -75,8 +81,7 @@
                                     <i class="bi bi-person-circle fs-5"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                    <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
                                     <li><a class="dropdown-item" href="../loginSystem/log_out.php">Logout</a></li>
                                 </ul>
                             </div>
@@ -94,8 +99,8 @@
         </header>
         <!-- Section-->
         <section class="py-5" style="background-color: #3b1704;">
-            <div class="container px-4 px-lg-5 mt-5">
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 <?php
                 if (isset($_SESSION['Client_id'])) {
                     $query = "SELECT * FROM Item WHERE Client_id != '$client_id' AND Is_sold = '0'";
@@ -124,15 +129,16 @@
                                     <?php echo number_format($row['Asking_price'], 2); ?>
                                 </div>
                             </div>
-                <?php
-                    }
-                ?>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                 <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
                             </div>
                         </div>
                     </div>
+                <?php
+                    }
+                ?>
+
                 </div>
             </div>
         </section>
