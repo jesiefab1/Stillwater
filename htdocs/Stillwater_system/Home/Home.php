@@ -2,15 +2,10 @@
     session_start();
     include '../db_connection.php';
 
-    // Print the entire userInfo array
-    if (isset($_SESSION['userInfo'])) {
-        echo "<pre>"; // Optional: for better formatting
-        print_r($_SESSION['userInfo']); // or use var_dump($userInfo);
-        echo "</pre>";
-    } else {
-        echo"there is no info";
+    // Get the Client_id from the session
+    if (isset($_SESSION['Client_id'])) {
+        $client_id = $_SESSION['Client_id'];
     }
-        
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +57,7 @@
                             <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
                         </button>
                         <?php
-                            if (!isset($_SESSION['Client_id'])) {
+                            if (isset($_SESSION['Client_id']) || isset($_SESSION['ReceivedEmail'])) {
                         ?>
                             <ul class="navbar-nav me-auto ms-lg-4">
                                 <li class="nav-item">

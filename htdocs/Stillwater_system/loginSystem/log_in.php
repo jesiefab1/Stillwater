@@ -9,8 +9,8 @@
 
 
     if (isset($_SESSION['Client_id'])) {
-        header("Location: Home.php");
-        exit;
+        header("Location: ../Home/Home.php");
+        exit();
     }
 
     $failed = false;
@@ -22,6 +22,10 @@
     }
 
     $previous_page = $_SESSION['previous_page'];
+
+    header("Access-Control-Allow-Origin: *"); // Allow all origins (for testing)
+    header("Access-Control-Allow-Methods: POST"); // Allow POST requests
+    header("Access-Control-Allow-Headers: Content-Type"); // Allow specific headers
 
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -45,12 +49,73 @@
             $failed = true;
         }
     }
+    function validationAndDecodeIdToken($idToken) {
+        $clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Your ClientID
+        $googleApiUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . $idToken;
+    
+        $response = file_get_contents($googleApiUrl);
+        $userInfo = json_decode($response, true);
+    
+        if (isset($userInfo['aud']) && $userInfo['aud'] === $clientId) {
+            return $userInfo; // Returns user info if valid
+        } else {
+            return false; // Invalid token or client ID
+        }
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        error_log("POST request received"); // Log that a POST request was received
+        if (isset($_POST['id_token'])) {
+            $idToken = $_POST['id_token'];
+            error_log("Received ID token: " . $idToken); // Log the ID token
+        
+            // Validate the Id token
+            $userInfo = validationAndDecodeIdToken($idToken);
+            $_SESSION["userInfo"] = $userInfo;
+        
+        
+            if ($userInfo) {
+                $first_name = $userInfo['given_name'];
+                $last_name = $userInfo['family_name'];
+                $email = $userInfo['email'];
+                $password = $userInfo['password'];
+                $_SESSION["ReceivedEmail"] = $email;
+        
+                // Check if the user already exists
+                $checkQuery = "SELECT * FROM Client WHERE Email = $email AND Status = 0";
+                $checkStmt = $conn->prepare($checkQuery);
+                $checkStmt->bind_param("s", $email);
+                $checkStmt->execute();
+                $result = $checkStmt->get_result();
+        
+                if ($result->num_rows > 0) {
+                    echo "User  already exists.";
+                } else {
+                    // Insert user data into the database
+                    $stmt = $conn->prepare("INSERT INTO Client (First_name, Lastname, Email) VALUES ($first_name, $last_name, '$email')");
+                    $stmt->bind_param("s", $email);
+        
+                    if ($stmt->execute()) {
+                        echo "New record created successfully";
+                    } else {
+                        echo "Error: " . $stmt->error;
+                    }
+        
+                    $stmt->close();
+                }
+        
+                $checkStmt->close();
+            } else {
+                echo "Failed to decode ID token";
+            }
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -67,12 +132,13 @@
                 const idToken = params.get('id_token')
 
                 if (idToken) {
+                    console.log("Sending ID token:", idToken); // Log the ID token
                     $.ajax({
-                        url: 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/Home/tokenDecoder.php', //URL here
+                        url: 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php', //URL here
                         type: 'POST',
                         data: { id_token: idToken },
                         success: function(response) {
-                            window.location.href = '../Home/tokenDecoder.php';
+                            window.location.href = "../Home/Home.php";
                             console.log('Response from server', response);
                         },
                         error: function(xhr, status, error) {
