@@ -39,14 +39,41 @@
             // Email and password are valid
             $row = mysqli_fetch_assoc($result);
             $_SESSION['Client_id'] = $row['Client_id'];
-            $_SESSION['First_name'] = $row['First_name'];
-            $_SESSION['Lastname'] = $row['Lastname'];// Store Client_id in session
-            
 
         } else {
             $failed = true;
         }
     }
+    
+    function validationAndDecodeIdToken($idToken) {
+        $clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Your ClientID
+        $googleApiUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . $idToken;
+
+        $response = file_get_contents($googleApiUrl);
+        $userInfo = json_decode($response, true);
+
+        if (isset($userInfo['aud']) && $userInfo['aud'] === $clientId) {
+            return $userInfo; // Returns user info if valid
+        } else {
+            return false; // Invalid token or client ID
+        }
+    }
+
+    if (isset($_POST['id_token'])) {
+        $idToken = $_POST['id_token'];
+
+        // Validate the Id token
+        $userInfo = validationAndDecodeIdToken($idToken);
+        // This method is where we get the user info (gmail)
+        // Using the validateAndDecideIdToken() Function
+        if ($userInfo) {
+            echo "User's email: " . $userInfo["email"];
+            $_SESSION ["ReceivedEmail"] = $userInfo["email"];
+        } else {
+            echo "Failed to decode ID token";
+        }
+        return;
+    } 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,44 +89,47 @@
         function goBack() {
             window.history.back();
         }
+        const hash = window.location.hash;
+            if (hash) {
+                const params = new URLSearchParams(hash.substring(1)); //Removes the '#' and pars params
+                const idToken = params.get('id_token')
 
-        // Assuming you have already loaded the Google API and initialized it
-        document.getElementById('googleSignInButton').addEventListener('click', function() {
-            // Call the Google Sign-In function here
-            google.accounts.id.prompt(); // This will show the Google Sign-In prompt
-        });
-        
-        function handleCredentialResponse(response) {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'callback.php');
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    // Handle successful login
-                    console.log('Login successful:', xhr.responseText);
-                    window.location.reload(); // Reload to show user info
+                if (idToken) {
+                    $.ajax({
+                        url: 'log_in.php', //URL here
+                        type: 'POST',
+                        data: { id_token: idToken },
+                        success: function(response) {
+                            window.location.href = '../Home/Home.php';
+                            console.log('Response from server', response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', error)
+                        }
+                    });
                 } else {
-                    console.error('Login failed:', xhr.responseText);
+                    console.loh("No ID token found in the URL")
                 }
-            };
-            xhr.send('id_token=' + response.credential);
-        }
+            }
 
-        window.onload = function () {
-            google.accounts.id.initialize({
-                client_id: '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com',
-                callback: handleCredentialResponse
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("g_id_signin"),
-                { theme: "outline", size: "large" }
-            );
-        }
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('google-signin-btn').onclick = function() {
+                    function generateNonce() {
+                        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    }
 
-        // This function should be called when the Google Sign-In is successful
-        function onSignIn(credential) {
-            handleCredentialResponse(credential);
-        }
+                    const nonce = generateNonce();
+                    const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
+                    // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
+                    const redirectUri = 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/Home/Home.php'; // Changed from redirectUrl to redirectUri
+                    const scope = 'openid email profile';
+                    const responseType = 'id_token';
+                    const prompt = 'select_account';
+
+                    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${scope}&response_type=${responseType}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=${prompt}&nonce=${nonce}`;
+                    window.location.href = authUrl;
+                };
+        });
     </script>
 
     <style>
@@ -130,76 +160,6 @@
         .Back > button:hover {
             background-color: #45a049;
             transform: scale(1.05);
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .button-wrapper {
-            margin-top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-        .button-wrapper > button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 100px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .button-wrapper > button:hover {
-            background-color: #45a049;
-            transform: scale(1.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label, small {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        input[type="email"],
-        input[type="password"] {
-            width: 94%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button[type="submit"]:hover {
-            background-color: #218838;
-        }
-        span {
-            color: #fa3c5c;
-            background-color: #ffc0cb;
-            padding-right: 16.5%;
-            padding-left: 16.5%;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            border-radius: 5px;
         }
         .btn btn-primary btn-floating mx-1 rounded-circle {
             width: 40px;
@@ -245,7 +205,7 @@
                 <i class="fab fa-twitter"></i>
                 </button>
 
-                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1 rounded-circle" id="googleSignInButton">
+                <button  type="button" id="google-signin-btn" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1 rounded-circle">
                 <i class='fab fa-google'></i>
                 </button>
             </div>
@@ -257,13 +217,13 @@
             <!-- Email input -->
             <div data-mdb-input-init class="form-outline mb-4">
                 <input type="email" id="form3Example3" class="form-control form-control-lg"
-                placeholder="Enter a valid email address" />
+                placeholder="Enter a valid email address" name="email" required/>
             </div>
 
             <!-- Password input -->
             <div data-mdb-input-init class="form-outline mb-3">
                 <input type="password" id="form3Example4" class="form-control form-control-lg"
-                placeholder="Enter password" />
+                placeholder="Enter password" name="password" required/>
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
@@ -274,14 +234,14 @@
                     Remember me
                 </label>
                 </div>
-                <a href="#!" class="text-body">Forgot password?</a>
+                <a href="#!" class="text-body text-decoration-none fw-bold">Forgot password?</a>
             </div>
 
             <div class="text-center text-lg-start mt-4 pt-2">
-                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
+                <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
                 style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
                 <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!"
-                    class="link-danger">Register</a></p>
+                    class="link-danger text-decoration-none">Register</a></p>
             </div>
 
             </form>

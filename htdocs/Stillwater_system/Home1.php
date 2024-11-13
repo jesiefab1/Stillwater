@@ -135,7 +135,7 @@
                             <div class="contents">
                                 <a href="profile.php">Profile</a>
                                 <a href="admin_login.php">Administrator</a>
-                                <a href="log_out.php">Logout</a>
+                                <a href="loginSystem/log_out.php">Logout</a>
                             </div>
                     </div>
                 </li>
