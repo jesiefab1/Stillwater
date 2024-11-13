@@ -39,41 +39,12 @@
             // Email and password are valid
             $row = mysqli_fetch_assoc($result);
             $_SESSION['Client_id'] = $row['Client_id'];
+            exit();
 
         } else {
             $failed = true;
         }
     }
-    
-    function validationAndDecodeIdToken($idToken) {
-        $clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Your ClientID
-        $googleApiUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . $idToken;
-
-        $response = file_get_contents($googleApiUrl);
-        $userInfo = json_decode($response, true);
-
-        if (isset($userInfo['aud']) && $userInfo['aud'] === $clientId) {
-            return $userInfo; // Returns user info if valid
-        } else {
-            return false; // Invalid token or client ID
-        }
-    }
-
-    if (isset($_POST['id_token'])) {
-        $idToken = $_POST['id_token'];
-
-        // Validate the Id token
-        $userInfo = validationAndDecodeIdToken($idToken);
-        // This method is where we get the user info (gmail)
-        // Using the validateAndDecideIdToken() Function
-        if ($userInfo) {
-            echo "User's email: " . $userInfo["email"];
-            $_SESSION ["ReceivedEmail"] = $userInfo["email"];
-        } else {
-            echo "Failed to decode ID token";
-        }
-        return;
-    } 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -89,6 +60,7 @@
         function goBack() {
             window.history.back();
         }
+
         const hash = window.location.hash;
             if (hash) {
                 const params = new URLSearchParams(hash.substring(1)); //Removes the '#' and pars params
@@ -96,11 +68,11 @@
 
                 if (idToken) {
                     $.ajax({
-                        url: 'log_in.php', //URL here
+                        url: 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/Home/tokenDecoder.php', //URL here
                         type: 'POST',
                         data: { id_token: idToken },
                         success: function(response) {
-                            window.location.href = '../Home/Home.php';
+                            window.location.href = '../Home/tokenDecoder.php';
                             console.log('Response from server', response);
                         },
                         error: function(xhr, status, error) {
@@ -108,7 +80,7 @@
                         }
                     });
                 } else {
-                    console.loh("No ID token found in the URL")
+                    console.log("No ID token found in the URL")
                 }
             }
 
@@ -121,15 +93,14 @@
                     const nonce = generateNonce();
                     const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
                     // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
-                    const redirectUri = 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/Home/Home.php'; // Changed from redirectUrl to redirectUri
+                    const redirectUri = 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
                     const scope = 'openid email profile';
                     const responseType = 'id_token';
                     const prompt = 'select_account';
-
                     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${scope}&response_type=${responseType}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=${prompt}&nonce=${nonce}`;
                     window.location.href = authUrl;
                 };
-        });
+            });
     </script>
 
     <style>

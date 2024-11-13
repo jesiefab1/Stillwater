@@ -1,6 +1,16 @@
-<l?php
+<?php
     session_start();
     include '../db_connection.php';
+
+    // Print the entire userInfo array
+    if (isset($_SESSION['userInfo'])) {
+        echo "<pre>"; // Optional: for better formatting
+        print_r($_SESSION['userInfo']); // or use var_dump($userInfo);
+        echo "</pre>";
+    } else {
+        echo"there is no info";
+    }
+        
 ?>
 
 <!DOCTYPE html>
