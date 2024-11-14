@@ -28,6 +28,17 @@
         $email1 = $_POST['email'];
         $password1 = $_POST['password'];
 
+        $query2 = "SELECT * FROM Admin_users WHERE Username= '$email1' AND Password = '$password1'";
+        $Query2 = $conn -> query($query2);
+        $Query2_Result = $Query2 -> fetch_assoc();
+
+        if (isset($Query2_Result)){
+            $_SESSION['Client_id'] = $Query2_Result['Admin_id'];
+            $_SESSION['UserType'] = "Admin";
+            header("Location: ../Admin/client.php");
+            exit;
+        }
+
         // Prepare the SQL query to validate email and password
         $query = "SELECT * FROM Client WHERE Email = '$email1' AND Password = '$password1' AND Status = '0'";
         $result = mysqli_query($conn, $query);
@@ -44,92 +55,6 @@
             $failed = true;
         }
     }
-    function validationAndDecodeIdToken($idToken) {
-        $clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Your ClientID
-        $googleApiUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . $idToken;
-    
-        $response = file_get_contents($googleApiUrl);
-        $userInfo = json_decode($response, true);
-    
-        if (isset($userInfo['aud']) && $userInfo['aud'] === $clientId) {
-            return $userInfo; // Returns user info if valid
-        } else {
-            return false; // Invalid token or client ID
-        }
-    }
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        error_log("POST request received"); // Log that a POST request was received
-        if (isset($_POST['id_token'])) {
-            $idToken = $_POST['id_token'];
-            error_log("Received ID token: " . $idToken); // Log the ID token
-        
-            // Validate the Id token
-            $userInfo = validationAndDecodeIdToken($idToken);
-            $_SESSION["userInfo"] = $userInfo;
-
-            if ($userInfo) {
-                $first_name = $userInfo['given_name'];
-                $last_name = $userInfo['family_name'];
-                $email = $userInfo['email'];
-                $_SESSION["ReceivedEmail"] = $email;
-            
-                // Check if the user already exists
-                $checkQuery = "SELECT * FROM Client WHERE Email = ? AND Status = 0";
-                $stmtCheck = $conn->prepare($checkQuery);
-                $stmtCheck->bind_param("s", $email);
-            
-                if ($stmtCheck->execute()) {
-                    $checkResult = $stmtCheck->get_result();
-                    $rowCheck = $checkResult->fetch_array(MYSQLI_ASSOC);
-                    
-                    if ($rowCheck) {
-                        // User already exists
-                        $_SESSION['Client_id'] = $rowCheck['Client_id'];
-                        header('Location: ../Home/Home.php'); // Redirect to home page
-                        exit();
-                    } else {
-                        // Prepare the insert query
-                        $query1 = "INSERT INTO Client (First_name, Lastname, Email, Status) VALUES (?, ?, ?, 0)";
-                        $stmtInsert = $conn->prepare($query1);
-                        $stmtInsert->bind_param("sss", $first_name, $last_name, $email);
-            
-                        // Execute the insert query
-                        if ($stmtInsert->execute()) {
-                            // Prepare the select query to get the newly inserted user
-                            $querySelect = "SELECT * FROM Client WHERE Email = ? AND Status = '0'";
-                            $stmtSelect = $conn->prepare($querySelect);
-                            $stmtSelect->bind_param("s", $email);
-            
-                            if ($stmtSelect->execute()) {
-                                $resultSelect = $stmtSelect->get_result();
-                                $rowSelect = $resultSelect->fetch_assoc();
-                                $_SESSION['Client_id'] = $rowSelect['Client_id'];
-                                header('Location: ../Home/Home.php'); // Redirect to home page
-                                exit();
-                            } else {
-                                echo "Error selecting data: " . $stmtSelect->error;
-                            }
-                        } else {
-                            echo "Error inserting data: " . $stmtInsert->error;
-                        }
-                    }
-                } else {
-                    echo "Error executing check query: " . $stmtCheck->error;
-                }
-            
-                // Close statements
-                $stmtCheck->close();
-                if (isset($stmtInsert)) {
-                    $stmtInsert->close();
-                }
-                if (isset($stmtSelect)) {
-                    $stmtSelect->close();
-                }
-            } else {
-                echo "Failed to decode ID token";
-            }
-        }
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -141,54 +66,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <title>Add Client</title> 
-
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-
-        const hash = window.location.hash;
-            if (hash) {
-                const params = new URLSearchParams(hash.substring(1)); //Removes the '#' and pars params
-                const idToken = params.get('id_token')
-
-                if (idToken) {
-                    console.log("Sending ID token:", idToken); // Log the ID token
-                    $.ajax({
-                        url: 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php', //URL here
-                        type: 'POST',
-                        data: { id_token: idToken },
-                        success: function(response) {
-                            window.location.href = "../Home/Home.php";
-                            console.log('Response from server', response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('AJAX Error:', error)
-                        }
-                    });
-                } else {
-                    console.log("No ID token found in the URL")
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('google-signin-btn').onclick = function() {
-                    function generateNonce() {
-                        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    }
-
-                    const nonce = generateNonce();
-                    const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
-                    // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
-                    const redirectUri = 'https://shiny-yodel-p466qv9g645crpp7-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
-                    const scope = 'openid email profile';
-                    const responseType = 'id_token';
-                    const prompt = 'select_account';
-                    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${scope}&response_type=${responseType}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=${prompt}&nonce=${nonce}`;
-                    window.location.href = authUrl;
-                };
-            });
-    </script>
 
     <style>
 
@@ -272,6 +149,16 @@
                 <p class="text-center fw-bold mx-3 mb-0">Or</p>
             </div>
 
+            <?php
+            if ($failed) {
+            ?>
+                <div class="bg-danger p-1 mb-2 text-center fw-bold border border-danger rounded">
+                    <p class="mb-1 mt-1">Invalid Email or Password</p>
+                </div>
+            <?php
+            }
+            ?>
+
             <!-- Email input -->
             <div data-mdb-input-init class="form-outline mb-4">
                 <input type="email" id="form3Example3" class="form-control form-control-lg"
@@ -307,5 +194,53 @@
         </div>
     </div>
     </section>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        const hash = window.location.hash;
+            if (hash) {
+                const params = new URLSearchParams(hash.substring(1)); //Removes the '#' and pars params
+                const idToken = params.get('id_token')
+
+                if (idToken) {
+                    console.log("Sending ID token:", idToken); // Log the ID token
+                    $.ajax({
+                        url: 'login_function.php', //URL here
+                        type: 'POST',
+                        data: { id_token: idToken },
+                        success: function(response) {
+                            //window.location.href = "../Home/Home.php";
+                            console.log('Response from server', response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', error)
+                        }
+                    });
+                } else {
+                    console.log("No ID token found in the URL")
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('google-signin-btn').onclick = function() {
+                    function generateNonce() {
+                        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    }
+
+                    const nonce = generateNonce();
+                    const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
+                    // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
+                    const redirectUri = 'https://effective-capybara-6944vgj6jjq72rxvw-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
+                    const scope = 'openid email profile';
+                    const responseType = 'id_token';
+                    const prompt = 'select_account';
+                    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${scope}&response_type=${responseType}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=${prompt}&nonce=${nonce}`;
+                    window.location.href = authUrl;
+                };
+            });
+    </script>
 </body>
 </html>

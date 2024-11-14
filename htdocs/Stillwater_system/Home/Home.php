@@ -2,12 +2,19 @@
     session_start();
     include '../db_connection.php';
 
+    $client_id = "";
+
     // Get the Client_id from the session
     if (isset($_SESSION['Client_id'])) {
         $client_id = $_SESSION['Client_id'];
-
+        $UserType = $_SESSION['UserType'];
     }
-
+    if ($client_id != "" && $UserType != ""){
+        echo $_SESSION['Client_id']; 
+        echo $UserType;
+    }else{
+        echo "Not Login";
+    }
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +37,6 @@
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
         <script>
             window.addEventListener("scroll", function(){
                 var nav = document.querySelector("nav");
@@ -71,7 +77,7 @@
                             <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
                         </button>
                         <?php
-                            if (!isset($_SESSION['Client_id']) || !isset($_SESSION['ReceivedEmail'])) {
+                            if (!isset($_SESSION['Client_id'])) {
                         ?>
                             <ul class="navbar-nav me-auto ms-lg-4">
                                 <li class="nav-item">
@@ -87,6 +93,7 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                     <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
+                                    <li><a class="dropdown-item" href="../Nav/Dropdown/storage.php">My Items</a></li>
                                     <li><a class="dropdown-item" href="../loginSystem/log_out.php">Logout</a></li>
                                 </ul>
                             </div>
@@ -131,12 +138,12 @@
                                     <!-- Product name-->
                                     <h5 class="fw-bolder"><?php echo $row['Item_name']; ?></h5>
                                     <!-- Product price-->
-                                    <?php echo number_format($row['Asking_price'], 2); ?>
+                                    <?php echo '₱ ' . number_format($row['Asking_price'], 2); ?>
                                 </div>
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><button onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
+                            <div class="text-center"><button onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
                             </div>
                         </div>
                     </div>
