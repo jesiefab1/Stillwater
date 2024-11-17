@@ -1,11 +1,18 @@
 <?php
 
+// Include database connection file
+include('../db_connection.php');
+
 session_start();
+$_SESSION['UserType'] = "Admin";
+// Check if the user_admin is logged in
+if (!isset($_SESSION['UserType'])) {
+    echo "<script>alert('You must log in first. Redirecting to login page...');</script>";
+    echo "<script>window.location.href = 'admin_login.php';</script>";
+    exit;
+} 
 
 $client_id = $_SESSION['Client_id'];
-
-// Include database connection file
-include 'db_connection.php';
 
 // Check if Client_id is set in the URL
 if (isset($_GET['Item_number'])) {

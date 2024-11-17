@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include "db_connection.php";
+include "../db_connection.php";
 
 // Destroy all session data
 session_unset();

@@ -1,7 +1,7 @@
 <?php
     // Include the database connection file
-    include ('db_connection.php');
-
+    include('../db_connection.php');
+    
     session_start();
 
     // Check if the user_admin is logged in
