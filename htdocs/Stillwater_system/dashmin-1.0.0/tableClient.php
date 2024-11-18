@@ -155,7 +155,15 @@
                     </div>
                     <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
                     <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link active"><i class="fa fa-table me-2"></i>Tables</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tables</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="tableClient.php" class="dropdown-item">Clients Table</a>
+                            <a href="tableItem.php" class="dropdown-item">Items Table</a>
+                            <a href="tablePurchases.php" class="dropdown-item">Purchases Table</a>
+                            <a href="tableSales.php" class="dropdown-item">Sales Table</a>
+                        </div>
+                    </div>
                     <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
@@ -267,12 +275,7 @@
             <div class="container-fluid">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-secondary" onclick="showClientTable()">Client</button>
-                            <button type="button" class="btn btn-secondary" onclick="showItemTable()">Item</button>
-                            <button type="button" class="btn btn-secondary" onclick="showPurchasesTable()">Purchases</button>
-                            <button type="button" class="btn btn-secondary" onclick="showSalesTable()">Sales</button>
-                        </div>
+                        <h6 class="m-0 fw-bold text-primary">Client Table</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive overflow-visible">
@@ -488,85 +491,6 @@
                     </div>
                 </div>
             </div>
-            <script>
-                function showClientTable() {
-                    document.getElementById('tableHeader').style.display = '';
-                    document.getElementById('tableFooter').style.display = '';
-                    document.getElementById('tableBody').style.display = '';
-
-                    document.getElementById('tableHeaderItem').style.display = 'none';
-                    document.getElementById('tableFooterItem').style.display = 'none';
-                    document.getElementById('tableBodyItem').style.display = 'none';
-
-                    document.getElementById('tableHeaderPurchases').style.display = 'none';
-                    document.getElementById('tableFooterPurchases').style.display = 'none';
-                    document.getElementById('tableBodyPurchases').style.display = 'none';
-
-                    document.getElementById('tableHeaderSales').style.display = 'none';
-                    document.getElementById('tableFooterSales').style.display = 'none';
-                    document.getElementById('tableBodySales').style.display = 'none';
-                }
-
-                function showItemTable() {
-                    document.getElementById('tableHeader').style.display = 'none';
-                    document.getElementById('tableFooter').style.display = 'none';
-                    document.getElementById('tableBody').style.display = 'none';
-
-                    document.getElementById('tableHeaderItem').style.display = '';
-                    document.getElementById('tableFooterItem').style.display = '';
-                    document.getElementById('tableBodyItem').style.display = '';
-
-                    document.getElementById('tableHeaderPurchases').style.display = 'none';
-                    document.getElementById('tableFooterPurchases').style.display = 'none';
-                    document.getElementById('tableBodyPurchases').style.display = 'none';
-
-                    document.getElementById('tableHeaderSales').style.display = 'none';
-                    document.getElementById('tableFooterSales').style.display = 'none';
-                    document.getElementById('tableBodySales').style.display = 'none';
-                }
-
-                function showPurchasesTable() {
-                    document.getElementById('tableHeader').style.display = 'none';
-                    document.getElementById('tableFooter').style.display = 'none';
-                    document.getElementById('tableBody').style.display = 'none';
-
-                    document.getElementById('tableHeaderItem').style.display = 'none';
-                    document.getElementById('tableFooterItem').style.display = 'none';
-                    document.getElementById('tableBodyItem').style.display = 'none';
-
-                    document.getElementById('tableHeaderPurchases').style.display = '';
-                    document.getElementById('tableFooterPurchases').style.display = '';
-                    document.getElementById('tableBodyPurchases').style.display = '';
-
-                    document.getElementById('tableHeaderSales').style.display = 'none';
-                    document.getElementById('tableFooterSales').style.display = 'none';
-                    document.getElementById('tableBodySales').style.display = 'none';
-                }
-
-                function showSalesTable() {
-                    document.getElementById('tableHeader').style.display = 'none';
-                    document.getElementById('tableFooter').style.display = 'none';
-                    document.getElementById('tableBody').style.display = 'none';
-
-                    document.getElementById('tableHeaderItem').style.display = 'none';
-                    document.getElementById('tableFooterItem').style.display = 'none';
-                    document.getElementById('tableBodyItem').style.display = 'none';
-
-                    document.getElementById('tableHeaderPurchases').style.display = 'none';
-                    document.getElementById('tableFooterPurchases').style.display = 'none';
-                    document.getElementById('tableBodyPurchases').style.display = 'none';
-
-                    document.getElementById('tableHeaderSales').style.display = '';
-                    document.getElementById('tableFooterSales').style.display = '';
-                    document.getElementById('tableBodySales').style.display = '';
-                }
-            </script>
-                            </div>
-                        </div>  
-                    </div>
-                </div>
-            </div>
-            <!-- /.container-fluid -->
 
             <!-- Back to Top -->
             <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -590,93 +514,32 @@
         <!-- DataTables Initialization -->
         <script>
     $(document).ready(function() {
-        var table = $('#dataTable').DataTable({
+        var clientTable = $('#dataTable').DataTable({
             "searching": true,
             "dom": '<"top"lf>rt<"bottom"ip><"clear">'
         });
 
-        function initializeDataTable() {
-            var searchValue = table.search(); // Store the current search value
-            table.destroy();
-            table = $('#dataTable').DataTable({
-                "searching": true,
-                "dom": '<"top"lf>rt<"bottom"ip><"clear">'
-            });
-            table.search(searchValue).draw(); // Reapply the search value
-        }
+        var itemTable = $('#dataTableItem').DataTable({
+            "searching": true,
+            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
+        });
+
+        var purchasesTable = $('#dataTablePurchases').DataTable({
+            "searching": true,
+            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
+        });
+
+        var salesTable = $('#dataTableSales').DataTable({
+            "searching": true,
+            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
+        });
 
         $('#statusFilter').on('change', function() {
             var selectedValue = $(this).val();
-            table.column(5).search(selectedValue).draw();
+            var visibleTable = $('table:visible').DataTable();
+            visibleTable.column(5).search(selectedValue).draw();
         });
 
-        function showClientTable() {
-            $('#dataTable').DataTable().destroy();
-            initializeDataTable();
-            $('#tableHeader').show();
-            $('#tableFooter').show();
-            $('#tableBody').show();
-            $('#tableHeaderItem').hide();
-            $('#tableFooterItem').hide();
-            $('#tableBodyItem').hide();
-            $('#tableHeaderPurchases').hide();
-            $('#tableFooterPurchases').hide();
-            $('#tableBodyPurchases').hide();
-            $('#tableHeaderSales').hide();
-            $('#tableFooterSales').hide();
-            $('#tableBodySales').hide();
-        }
-
-        function showItemTable() {
-            $('#dataTable').DataTable().destroy();
-            initializeDataTable();
-            $('#tableHeader').hide();
-            $('#tableFooter').hide();
-            $('#tableBody').hide();
-            $('#tableHeaderItem').show();
-            $('#tableFooterItem').show();
-            $('#tableBodyItem').show();
-            $('#tableHeaderPurchases').hide();
-            $('#tableFooterPurchases').hide();
-            $('#tableBodyPurchases').hide();
-            $('#tableHeaderSales').hide();
-            $('#tableFooterSales').hide();
-            $('#tableBodySales').hide();
-        }
-
-        function showPurchasesTable() {
-            $('#dataTable').DataTable().destroy();
-            initializeDataTable();
-            $('#tableHeader').hide();
-            $('#tableFooter').hide();
-            $('#tableBody').hide();
-            $('#tableHeaderItem').hide();
-            $('#tableFooterItem').hide();
-            $('#tableBodyItem').hide();
-            $('#tableHeaderPurchases').show();
-            $('#tableFooterPurchases').show();
-            $('#tableBodyPurchases').show();
-            $('#tableHeaderSales').hide();
-            $('#tableFooterSales').hide();
-            $('#tableBodySales').hide();
-        }
-
-        function showSalesTable() {
-            $('#dataTable').DataTable().destroy();
-            initializeDataTable();
-            $('#tableHeader').hide();
-            $('#tableFooter').hide();
-            $('#tableBody').hide();
-            $('#tableHeaderItem').hide();
-            $('#tableFooterItem').hide();
-            $('#tableBodyItem').hide();
-            $('#tableHeaderPurchases').hide();
-            $('#tableFooterPurchases').hide();
-            $('#tableBodyPurchases').hide();
-            $('#tableHeaderSales').show();
-            $('#tableFooterSales').show();
-            $('#tableBodySales').show();
-        }
     });
         </script>
     </div>

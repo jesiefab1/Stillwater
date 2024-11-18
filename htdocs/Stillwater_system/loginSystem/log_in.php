@@ -35,7 +35,7 @@
         if (isset($Query2_Result)){
             $_SESSION['Client_id'] = $Query2_Result['Admin_id'];
             $_SESSION['UserType'] = "Admin";
-            header("Location: ../dashmin-1.0.0/table.php");
+            header("Location: ../dashmin-1.0.0/Tables/tableClient.php");
             exit();
         }
 
