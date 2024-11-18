@@ -38,7 +38,7 @@
             $stmt->execute();
 
             // Redirect to the client page after updating
-            header("Location: client.php");
+            echo "<script>window.close();</script>";
             exit();
         }
     } else {
@@ -52,78 +52,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Update Client</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-bottom: 5px;
-            color: #555;
-        }
-        input[type="text"],
-        input[type="email"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Update Client</h1>
-        <form method="POST" action="">
-            <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($client['First_name']); ?>" required>
-
-            <label for="last_name">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($client['Lastname']); ?>" required>
-
-            <label for="phone_number">Phone Number:</label>
-            <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($client['Phone_number']); ?>" required>
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($client['Email']); ?>" required>
-
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($client['Address']); ?>" required>
-
-            <button type="submit">Update Client</button>
-        </form>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title text-center">Update Client</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($client['First_name']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo htmlspecialchars($client['Lastname']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($client['Phone_number']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($client['Email']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($client['Address']); ?>">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">Update Client</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 </html>

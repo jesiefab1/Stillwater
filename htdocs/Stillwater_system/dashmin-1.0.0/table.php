@@ -10,29 +10,25 @@
         exit;
     }
 
-    $show = true;
-    $show1 = false;
-
     function updateButton($Client_id) {
-        echo '<button onclick="window.location.href=\'update_client.php?Client_id=' . $Client_id . '\'" class="updateButton">
+        echo '<button onclick="window.open(\'../Admin/update_client.php?Client_id=' . $Client_id . '\', \'_blank\', \'width=800,height=600\')" class="updateButton">
         Update
         </button>';
     }
-
     function deleteButton($Client_id) {
-        echo '<button onclick="window.location.href=\'delete_client.php?Client_id=' . $Client_id . '\'" class="">
+        echo '<button onclick="window.location.href=\'../Admin/delete_client.php?Client_id=' . $Client_id . '\'" class="deleteButton">
         Delete
         </button>';
     }
 
     function updateButton1($Item_number) {
-        echo '<button onclick="window.location.href=\'update_item.php?Item_number=' . $Item_number . '\'" class="updateButton">
+        echo '<button onclick="window.open(\'../Admin/update_item.php?Item_number=' . $Item_number . '\', \'_blank\', \'width=800,height=600\')" class="updateButton">
         Update
         </button>';
     }
-    
+
     function deleteButton1($Item_number) {
-        echo '<button onclick="window.location.href=\'delete_item.php?Item_number=' . $Item_number . '\'" class="deleteButton">
+        echo '<button onclick="window.location.href=\'../Admin/delete_item.php?Item_number=' . $Item_number . '\'" class="deleteButton">
         Delete
         </button>';
     }
@@ -364,28 +360,6 @@
                                             <th>Action</th>
                                         </tr>
                                     </tfoot>
-                                    <thead id="tableHeaderItem" style="display:none;">
-                                        <tr>
-                                            <th>Client Name</th>
-                                            <th>Item Name</th>
-                                            <th>Item Description</th>
-                                            <th>Asking Price</th>
-                                            <th>Condition</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot id="tableFooterItem" style="display:none;">
-                                        <tr>
-                                            <th>Client Name</th>
-                                            <th>Item Name</th>
-                                            <th>Item Description</th>
-                                            <th>Asking Price</th>
-                                            <th>Condition</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </tfoot>
                                     <tbody id="tableBodyItem" style="display:none;">
                                     <?php
                                         $query = "SELECT Item.*, Client.Lastname, Client.First_name FROM Item INNER JOIN Client ON Item.Client_id = Client.Client_id";
@@ -460,27 +434,31 @@
                                         }
                                         ?>
                                     </tbody>
-                                    <thead id="tableHeaderPurchases" style="display:none;">
+                                    <thead id="tableHeaderSales" style="display:none;">
                                         <tr>
                                             <th>Item Name</th>
                                             <th>Client Name</th>
-                                            <th>Purchase Cost</th>
-                                            <th>Date Purchased</th>
-                                            <th>Condition at Purchased</th>
+                                            <th>Commission Paid</th>
+                                            <th>Selling Price</th>
+                                            <th>Sales Tax</th>
+                                            <th>Date Sold</th>
                                         </tr>
                                     </thead>
-                                    <tfoot id="tableFooterPurchases" style="display:none;">
+                                    <tfoot id="tableFooterSales" style="display:none;">
                                         <tr>
                                             <th>Item Name</th>
                                             <th>Client Name</th>
-                                            <th>Purchase Cost</th>
-                                            <th>Date Purchased</th>
-                                            <th>Condition at Purchased</th>
+                                            <th>Commission Paid</th>
+                                            <th>Selling Price</th>
+                                            <th>Sales Tax</th>
+                                            <th>Date Sold</th>
                                         </tr>
                                     </tfoot>
                                     <tbody id="tableBodySales" style="display:none;">
                                     <?php
-                                        $query = "SELECT Item.*, Client.Lastname, Client.First_name FROM Item INNER JOIN Client ON Item.Client_id = Client.Client_id";
+                                        $query = "SELECT Sales.*, Item.Item_name, Client.First_name, Client.Lastname FROM Sales 
+                                        INNER JOIN Item ON Sales.Item_number = Item.Item_number 
+                                        INNER JOIN Client ON Sales.Client_id = Client.Client_id";
                                 
                                         $result = mysqli_query($conn, $query);
                                 
@@ -489,19 +467,16 @@
                                         }
                                 
                                         // Loop through each row in the result set and display it in the table
+                                        setlocale(LC_MONETARY, 'c', 'en-PH');
                                         while($row = mysqli_fetch_array($result)) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $row['Lastname'] . ", " . $row['First_name']; ?></td>
                                             <td><?php echo $row['Item_name']; ?></td>
-                                            <td><?php echo $row['Item_description']; ?></td>
-                                            <td><?php echo $row['Asking_price']; ?></td>
-                                            <td><?php echo $row['Condition']; ?></td>
-                                            <td><?php echo $row['Is_sold'] == 0 ? 'Valid' : 'Deleted'; ?></td>
-                                            <td>
-                                                <?php updateButton1($row['Item_number']); ?>
-                                                <?php deleteButton1($row['Item_number']); ?>
-                                            </td>
+                                            <td><?php echo $row['Lastname'] . ", " . $row['First_name']; ?></td>
+                                            <td><?php echo number_format($row['Commission_paid']); ?></td>
+                                            <td><?php echo number_format($row['Selling_price']); ?></td>
+                                            <td><?php echo $row['Sales_tax']; ?></td>
+                                            <td><?php echo $row['Date_sold']; ?></td>
                                         </tr>
                                         <?php
                                         }
@@ -614,13 +589,13 @@
 
         <!-- DataTables Initialization -->
         <script>
-        $(document).ready(function() {
-            var table = $('#dataTable').DataTable({
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable({
             "searching": true,
             "dom": '<"top"lf>rt<"bottom"ip><"clear">'
-            });
+        });
 
-            function initializeDataTable() {
+        function initializeDataTable() {
             var searchValue = table.search(); // Store the current search value
             table.destroy();
             table = $('#dataTable').DataTable({
@@ -628,14 +603,14 @@
                 "dom": '<"top"lf>rt<"bottom"ip><"clear">'
             });
             table.search(searchValue).draw(); // Reapply the search value
-            }
+        }
 
-            $('#statusFilter').on('change', function() {
+        $('#statusFilter').on('change', function() {
             var selectedValue = $(this).val();
             table.column(5).search(selectedValue).draw();
-            });
+        });
 
-            window.showClientTable = function() {
+        function showClientTable() {
             $('#dataTable').DataTable().destroy();
             initializeDataTable();
             $('#tableHeader').show();
@@ -650,9 +625,9 @@
             $('#tableHeaderSales').hide();
             $('#tableFooterSales').hide();
             $('#tableBodySales').hide();
-            }
+        }
 
-            window.showItemTable = function() {
+        function showItemTable() {
             $('#dataTable').DataTable().destroy();
             initializeDataTable();
             $('#tableHeader').hide();
@@ -667,9 +642,9 @@
             $('#tableHeaderSales').hide();
             $('#tableFooterSales').hide();
             $('#tableBodySales').hide();
-            }
+        }
 
-            window.showPurchasesTable = function() {
+        function showPurchasesTable() {
             $('#dataTable').DataTable().destroy();
             initializeDataTable();
             $('#tableHeader').hide();
@@ -684,9 +659,9 @@
             $('#tableHeaderSales').hide();
             $('#tableFooterSales').hide();
             $('#tableBodySales').hide();
-            }
+        }
 
-            window.showSalesTable = function() {
+        function showSalesTable() {
             $('#dataTable').DataTable().destroy();
             initializeDataTable();
             $('#tableHeader').hide();
@@ -701,8 +676,8 @@
             $('#tableHeaderSales').show();
             $('#tableFooterSales').show();
             $('#tableBodySales').show();
-            }
-        });
+        }
+    });
         </script>
     </div>
 </body>

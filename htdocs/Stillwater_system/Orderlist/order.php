@@ -1,4 +1,5 @@
 <?php
+
     // Start the session
     session_start();
 
@@ -59,7 +60,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <script>
         function goBack() {
@@ -86,127 +102,120 @@
             }
         }
     </script>
-
-    <style>
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .item-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            position: relative;
-        }
-        .item-card h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .item-card p {
-            margin: 10px 0;
-            color: #555;
-        }
-        .comment-form {
-            margin-top: 20px;
-        }
-        .comment-form textarea {
-            width: 96%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-        .comment-form button {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .comment-form button:hover {
-            background-color: #218838;
-        }
-        .buy-button-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        .buy-button-container button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .buy-button-container button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
 
-<div class="item-card">
-    <div class="buy-button-container">
-        <form method="POST">
-            <button type="submit" onclick="logInRequired()" name="buy">Buy</button>
-        </form>
-    </div>
-    
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['buy']) && isset($_SESSION['Client_id'])) {
-        // Calculate the commission
-        $commission_rate = .4;
-        $commission = $row['Asking_price'] * $commission_rate / 100;
-        setlocale(LC_MONETARY, 'c', 'en-PH');
-    
-        $commission = number_format($commission, 2);
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg fixed-top container-fluid" style="background-color: #3b1704;">
+            <div class="container px-4 px-lg-5">
+                <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="Home.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link text-white-50" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#!">All Products</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                                <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="d-flex mb-0">
+                        <button type="button" class="btn btn-outline-light" type="submit">
+                            <i class="bi-cart-fill me-1"></i>
+                            Cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        </button>
+                        <?php
+                            if (!isset($_SESSION['Client_id'])) {
+                        ?>
+                            <ul class="navbar-nav me-auto ms-lg-4">
+                                <li class="nav-item">
+                                    <a href="../loginSystem/log_in.php" class="nav-link active text-white">Login</a>
+                                </li>
+                            </ul>
+                        <?php
+                            } else {  
+                        ?>                      
+                            <div class="dropdown">
+                                <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-5"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
+                                    <li><a class="dropdown-item" href="../Nav/Dropdown/storage.php">My Items</a></li>
+                                    <li><a class="dropdown-item" href="../loginSystem/log_out.php">Logout</a></li>
+                                </ul>
+                            </div>
+                        <?php
+                        }
+                        ?>
 
-        $Sales_tax = 0.12;
+                    </form>
+                </div>
+            </div>
+        </nav>
+<!-- Navbar -->
 
-        // Get the current date and time
-        $date_time = date('Y-m-d H:i:s');
-    
-        // Prepare and bind
-        $query1 = "INSERT INTO Sales (Item_number, Client_id, Commission_paid, Selling_price, Sales_tax, Date_sold) VALUES ('$Item_number', '$Client_id', '$commission', '{$row['Asking_price']}', '$Sales_tax', '$date_time')";
-        $result1 = mysqli_query($conn, $query1);
+<!--Main layout-->
+<main class="mt-5 pt-4">
+    <div class="container mt-5">
+        <!--Grid row-->
+        <div class="row">
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/14.jpg" class="img-fluid" alt="" />
+            </div>
+            <!--Grid column-->
 
-        $query2 = "INSERT INTO Purchases (Item_number, Client_id, Purchase_cost, Date_purchased, Condition_at_purchased) VALUES ('$Item_number', '$client_id', '{$row['Asking_price']}', '$date_time', '{$row['Condition']}')";
-        $result2 = mysqli_query($conn, $query2);
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+                <!--Content-->
+                <div class="p-4">
+                    <div class="mb-3">
+                        <a href="">
+                            <span class="badge bg-dark me-1">Category 2</span>
+                        </a>
+                        <a href="">
+                            <span class="badge bg-info me-1">New</span>
+                        </a>
+                        <a href="">
+                            <span class="badge bg-danger me-1">Bestseller</span>
+                        </a>
+                    </div>
 
-        // Mark the item as sold
-        $query3 = "UPDATE Item SET is_sold = 1 WHERE Item_number = '$Item_number'";
-        $result3 = mysqli_query($conn, $query3);
+                    <p class="lead">
+                        <span class="me-1">
+                            <del>$200</del>
+                        </span>
+                        <span>$100</span>
+                    </p>
 
-        echo "<h3>Item purchased successfully!</h3>";
+                    <strong><p style="font-size: 20px;">Description</p></strong>
 
-    }
-    ?>
-    <h3><?php echo htmlspecialchars($row['Item_name'] ?? ''); ?></h3>
-    <p><strong>Description:</strong> <?php echo htmlspecialchars($row['Item_description'] ?? ''); ?></p>
-    <p><strong>Price:</strong> <?php echo number_format($row['Asking_price'] ?? 0, 2); ?></p>
-    <p><strong>Condition:</strong> <?php echo htmlspecialchars($row['Condition'] ?? ''); ?></p>
-    <p><strong>Comments:</strong> <?php echo nl2br($row['Comments'] ?? ''). " " . nl2br(htmlspecialchars($row['Date_of_comments'] ?? ''))?></p><br>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolor suscipit libero eos atque quia ipsa sint voluptatibus! Beatae sit assumenda asperiores iure at maxime atque repellendus maiores quia sapiente.</p>
 
-    <div class="comment-form">
-        <form method="POST" onsubmit="return handleCommentSubmission(event)">
-            <textarea name="comment" rows="4" placeholder="Add your comment here..."></textarea>
-            <button type="submit" onclick="handleCommentSubmission(event)">Submit Comment</button>
-        </form>
-    </div>
-</div>
+                    <form class="d-flex justify-content-left">
+                        <!-- Default input -->
+                        <button class="btn btn-primary ms-1" type="submit">
+                            Add to cart
+                            <i class="fas fa-shopping-cart ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+                <!--Content-->
+            </div>
+            <!--Grid column-->
+        </div>
+        <!--Grid row-->
+
 
 </body>
 </html>
+
+
+
