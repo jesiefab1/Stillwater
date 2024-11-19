@@ -52,7 +52,23 @@
     } else {
         $noLogin = true;
     }
-    
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['bidAmount']) && isset($_SESSION['Client_id'])) {
+        $bidAmount = mysqli_real_escape_string($conn, $_POST['bidAmount']);
+        $client_id = $_SESSION['Client_id'];
+
+        // Check if the bid is higher than the current highest bid
+        if ($bidAmount > $row['Highest_bid']) {
+            $query = "UPDATE Item 
+                    SET Highest_bid = '$bidAmount', Highest_bidder_id = '$client_id'
+                    WHERE Item_number = '$Item_number'";
+            mysqli_query($conn, $query);
+            echo "<script>alert('Your bid has been placed successfully!'); window.location.href='$_SERVER[REQUEST_URI]';</script>";
+        } else {
+            echo "<script>alert('Your bid must be higher than the current highest bid.');</script>";
+        }
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -199,13 +215,31 @@
 
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolor suscipit libero eos atque quia ipsa sint voluptatibus! Beatae sit assumenda asperiores iure at maxime atque repellendus maiores quia sapiente.</p>
 
-                    <form class="d-flex justify-content-left">
-                        <!-- Default input -->
-                        <button class="btn btn-primary ms-1" type="submit">
-                            Add to cart
-                            <i class="fas fa-shopping-cart ms-1"></i>
-                        </button>
-                    </form>
+                    <?php
+                        if (isset($Item_number)) {
+                            // Fetch the highest bid from the Bids table
+                            $highestBidQuery = "SELECT MAX(Bid_amount) as Highest_bid FROM Bids WHERE Item_number = '$Item_number'";
+                            $highestBidResult = mysqli_query($conn, $highestBidQuery);
+                            $highestBidRow = mysqli_fetch_assoc($highestBidResult);
+                            $highestBid = isset($highestBidRow['Highest_bid']) ? $highestBidRow['Highest_bid'] : 0;
+                        } else {
+                            $highestBid = 0;
+                        }
+                    ?>
+
+                    <!-- Auction Form -->
+                    <div class="p-4">
+                        <h4>Auction</h4>
+                        <p>Current highest bid: $<?php echo $highestBid; ?></p>
+
+                        <form method="post" action="">
+                            <div class="form-group">
+                                <label for="bidAmount">Your Bid</label>
+                                <input type="number" class="form-control" id="bidAmount" name="bidAmount" min="<?php echo isset($row['Highest_bid']) ? $row['Highest_bid'] + 1 : '1'; ?>" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Place Bid</button>
+                        </form>
+                    </div>
                 </div>
                 <!--Content-->
             </div>
@@ -216,6 +250,3 @@
 
 </body>
 </html>
-
-
-
