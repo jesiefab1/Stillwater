@@ -35,7 +35,7 @@
         if (isset($Query2_Result)){
             $_SESSION['Client_id'] = $Query2_Result['Admin_id'];
             $_SESSION['UserType'] = "Admin";
-            header("Location: ../dashmin-1.0.0/Tables/tableClient.php");
+            header("Location: ../dashmin-1.0.0/tableClient.php");
             exit();
         }
 
@@ -233,7 +233,7 @@
                     const nonce = generateNonce();
                     const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
                     // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
-                    const redirectUri = 'https://psychic-orbit-x5v599vqgjvxcvv6p-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
+                    const redirectUri = 'https://effective-capybara-6944vgj6jjq72rxvw-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
                     const scope = 'openid email profile';
                     const responseType = 'id_token';
                     const prompt = 'select_account';

@@ -4,16 +4,13 @@
 
     $client_id = "";
 
+    if (isset($_SESSION['UserType'])) {
+        $UserType = $_SESSION['UserType'];
+    }
+
     // Get the Client_id from the session
     if (isset($_SESSION['Client_id'])) {
         $client_id = $_SESSION['Client_id'];
-        $UserType = $_SESSION['UserType'];
-    }
-    if ($client_id != "" && $UserType != ""){
-        echo $_SESSION['Client_id']; 
-        echo $UserType;
-    }else{
-        echo "Not Login";
     }
 ?>
 
@@ -87,7 +84,7 @@
                         <?php
                             } else {  
                         ?>                      
-                            <div class="dropdown">
+                            <div class="dropdown ms-3">
                                 <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="bi bi-person-circle fs-5"></i>
                                 </button>
@@ -110,7 +107,7 @@
             <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/Crafting%20elegance%20with%20precision..png?raw=true" class="align-self-center img-fluid w-100 h-75 card-img">
         </header>
         <!-- Section-->
-        <section class="py-5" style="background-color: #3b1704;">
+        <section class="py-5" style="background-color: #d4d6d9;">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 <?php

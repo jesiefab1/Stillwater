@@ -155,11 +155,11 @@
                     </div>
                     <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
                     <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <div class="nav-item dropdown">
+                    <div class="nav-item dropdown border-start border-3 border-primary">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tables</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="tableClient.php" class="dropdown-item">Clients Table</a>
-                            <a href="tableItem.php" class="dropdown-item">Items Table</a>
+                            <a href="tableItem.php" class="dropdown-item bg-primary text-white">Items Table</a>
                             <a href="tablePurchases.php" class="dropdown-item">Purchases Table</a>
                             <a href="tableSales.php" class="dropdown-item">Sales Table</a>
                         </div>
