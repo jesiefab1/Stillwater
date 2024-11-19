@@ -275,7 +275,7 @@
             <div class="container-fluid">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 fw-bold text-primary">Client Table</h6>
+                        <h6 class="m-0 fw-bold text-primary">Sales Table</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive overflow-visible">
@@ -290,154 +290,7 @@
                             </div>
                             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead id="tableHeader">
-                                        <tr>
-                                            <th>Client ID</th>
-                                            <th>Name</th>
-                                            <th>Phone Number</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot id="tableFooter">
-                                        <tr>
-                                            <th>Client ID</th>
-                                            <th>Name</th>
-                                            <th>Phone Number</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody id="tableBody">
-                                    <?php
-                                        $query = "SELECT * FROM Client ORDER BY Lastname ASC";
-                                
-                                        $result = mysqli_query($conn, $query);
-                                
-                                        if (!$result) {
-                                            die("Query failed: " . mysqli_error($conn));
-                                        }
-                                
-                                        // Loop through each row in the result set and display it in the table
-                                        while($row = mysqli_fetch_array($result)) {
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['Client_id']; ?></td>
-                                            <td><?php echo $row['Lastname'] . ", " . $row['First_name']; ?></td>
-                                            <td><?php echo $row['Phone_number']; ?></td>
-                                            <td><?php echo $row['Email']; ?></td>
-                                            <td><?php echo $row['Address']; ?></td>
-                                            <td><?php echo $row['Status'] == 0 ? 'Valid' : 'Deleted'; ?></td>
-                                            <td>
-                                                <?php updateButton($row['Client_id']); ?>
-                                                <?php deleteButton($row['Client_id']); ?>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                        }
-                                        ?>
-                                    </tbody>
-                                    <thead id="tableHeaderItem" style="display:none;">
-                                        <tr>
-                                            <th>Client Name</th>
-                                            <th>Item Name</th>
-                                            <th>Item Description</th>
-                                            <th>Asking Price</th>
-                                            <th>Condition</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot id="tableFooterItem" style="display:none;">
-                                        <tr>
-                                            <th>Client Name</th>
-                                            <th>Item Name</th>
-                                            <th>Item Description</th>
-                                            <th>Asking Price</th>
-                                            <th>Condition</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody id="tableBodyItem" style="display:none;">
-                                    <?php
-                                        $query = "SELECT Item.*, Client.Lastname, Client.First_name FROM Item INNER JOIN Client ON Item.Client_id = Client.Client_id";
-                                
-                                        $result = mysqli_query($conn, $query);
-                                
-                                        if (!$result) {
-                                            die("Query failed: " . mysqli_error($conn));
-                                        }
-                                
-                                        // Loop through each row in the result set and display it in the table
-                                        while($row = mysqli_fetch_array($result)) {
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['Lastname'] . ", " . $row['First_name']; ?></td>
-                                            <td><?php echo $row['Item_name']; ?></td>
-                                            <td><?php echo $row['Item_description']; ?></td>
-                                            <td><?php echo $row['Asking_price']; ?></td>
-                                            <td><?php echo $row['Condition']; ?></td>
-                                            <td><?php echo $row['Is_sold'] == 0 ? 'Valid' : 'Deleted'; ?></td>
-                                            <td>
-                                                <?php updateButton1($row['Item_number']); ?>
-                                                <?php deleteButton1($row['Item_number']); ?>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                        }
-                                        ?>
-                                    </tbody>
-                                    <thead id="tableHeaderPurchases" style="display:none;">
-                                        <tr>
-                                            <th>Item Name</th>
-                                            <th>Client Name</th>
-                                            <th>Purchase Cost</th>
-                                            <th>Date Purchased</th>
-                                            <th>Condition at Purchased</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot id="tableFooterPurchases" style="display:none;">
-                                        <tr>
-                                            <th>Item Name</th>
-                                            <th>Client Name</th>
-                                            <th>Purchase Cost</th>
-                                            <th>Date Purchased</th>
-                                            <th>Condition at Purchased</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody id="tableBodyPurchases" style="display:none;">
-                                    <?php
-                                        $query = "SELECT Purchases.*, Item.Item_name, Client.First_name, Client.Lastname FROM Purchases 
-                                        INNER JOIN Item ON Purchases.Item_number = Item.Item_number
-                                        INNER JOIN Client ON Purchases.Client_id = Client.Client_id";
-                                
-                                        $result = mysqli_query($conn, $query);
-                                
-                                        if (!$result) {
-                                            die("Query failed: " . mysqli_error($conn));
-                                        }
-                                
-                                        // Loop through each row in the result set and display it in the table
-                                        setlocale(LC_MONETARY, 'c', 'en-PH');
-                                        while($row = mysqli_fetch_array($result)) {
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['Item_name']; ?></td>
-                                            <td><?php echo $row['Lastname'] . ', ' . $row['First_name']; ?></td>
-                                            <td><?php echo number_format($row['Purchase_cost'] ?? 0); ?></td>
-                                            <td><?php echo $row['Date_purchased']; ?></td>
-                                            <td><?php echo $row['Condition_at_purchased']; ?></td>
-                                        </tr>
-                                        <?php
-                                        }
-                                        ?>
-                                    </tbody>
-                                    <thead id="tableHeaderSales" style="display:none;">
+                                    <thead id="tableHeaderSales">
                                         <tr>
                                             <th>Item Name</th>
                                             <th>Client Name</th>
@@ -447,7 +300,7 @@
                                             <th>Date Sold</th>
                                         </tr>
                                     </thead>
-                                    <tfoot id="tableFooterSales" style="display:none;">
+                                    <tfoot id="tableFooterSales">
                                         <tr>
                                             <th>Item Name</th>
                                             <th>Client Name</th>
@@ -457,7 +310,7 @@
                                             <th>Date Sold</th>
                                         </tr>
                                     </tfoot>
-                                    <tbody id="tableBodySales" style="display:none;">
+                                    <tbody id="tableBodySales">
                                     <?php
                                         $query = "SELECT Sales.*, Item.Item_name, Client.First_name, Client.Lastname FROM Sales 
                                         INNER JOIN Item ON Sales.Item_number = Item.Item_number 
@@ -514,20 +367,6 @@
         <!-- DataTables Initialization -->
         <script>
     $(document).ready(function() {
-        var clientTable = $('#dataTable').DataTable({
-            "searching": true,
-            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
-        });
-
-        var itemTable = $('#dataTableItem').DataTable({
-            "searching": true,
-            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
-        });
-
-        var purchasesTable = $('#dataTablePurchases').DataTable({
-            "searching": true,
-            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
-        });
 
         var salesTable = $('#dataTableSales').DataTable({
             "searching": true,
