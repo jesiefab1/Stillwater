@@ -1,6 +1,11 @@
 <?php 
     session_start();
     include ('../db_connection.php');
+
+    if (isset($_SESSION['Client_id'])) {
+        header("Location: ../Home/Home.php");
+        exit();
+    }
     
     function validationAndDecodeIdToken($idToken) {
         $clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Your ClientID

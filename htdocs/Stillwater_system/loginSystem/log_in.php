@@ -17,7 +17,7 @@
     // Store the previous page URL in the session
     if (!isset($_SESSION['previous_page'])) {
         // Use HTTP_REFERER if available, otherwise fallback to 'Home.php'
-        $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? 'Home.php';
+        $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'] ?? '../Home/Home.php';
     }
 
     $previous_page = $_SESSION['previous_page'];
@@ -45,7 +45,7 @@
 
         // Check if the query returned any rows
         if (mysqli_num_rows($result) > 0) {
-            header('Location: ' . $_SESSION['previous_page']);
+            header('Location: ' . $previous_page);
             // Email and password are valid
             $row = mysqli_fetch_assoc($result);
             $_SESSION['Client_id'] = $row['Client_id'];
@@ -185,8 +185,8 @@
             <div class="text-center text-lg-start mt-4 pt-2">
                 <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
                 style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
-                <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!"
-                    class="link-danger text-decoration-none">Register</a></p>
+                <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? 
+                <a href="create_account.php"class="link-danger text-decoration-none">Register</a></p>
             </div>
 
             </form>
@@ -212,7 +212,7 @@
                         type: 'POST',
                         data: { id_token: idToken },
                         success: function(response) {
-                            //window.location.href = "../Home/Home.php";
+                            window.location.href = "../Home/Home.php";
                             console.log('Response from server', response);
                         },
                         error: function(xhr, status, error) {

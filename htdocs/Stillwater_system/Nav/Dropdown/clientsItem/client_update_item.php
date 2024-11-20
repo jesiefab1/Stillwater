@@ -1,9 +1,18 @@
 <?php
 
 // Include database connection file
-include('../db_connection.php');
+include('../../../db_connection.php');
 
 session_start();
+
+// Get the Client_id from the session
+if (isset($_SESSION['Client_id'])) {
+    $client_id = $_SESSION['Client_id'];
+} else {
+    header('Location: ../../Home/Home.php');
+    exit();
+}
+
 $_SESSION['UserType'] = "Admin";
 // Check if the user_admin is logged in
 if (!isset($_SESSION['UserType'])) {
