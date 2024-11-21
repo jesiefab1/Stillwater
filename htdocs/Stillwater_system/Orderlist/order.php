@@ -192,9 +192,23 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
                     </li>
                 </ul>
                 <form class="d-flex mb-0">
-                    <button type="button" class="btn btn-outline-light" type="submit">
-                        <i class="bi-cart-fill me-1"></i> Cart <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                    </button>
+                    <div class="container">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="navbar-nav me-auto ms-lg-4">
+                        <li class="nav-item px-2 rounded">
+                        <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                                <i class="bi bi-cart4 fs-5"></i>
+                        </a>
+                        </li>
+                    </ul>
                     <?php if (!isset($_SESSION['Client_id'])) { ?>
                         <ul class="navbar-nav me-auto ms-lg-4">
                             <li class="nav-item">
