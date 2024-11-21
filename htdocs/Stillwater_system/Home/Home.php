@@ -73,11 +73,23 @@ if (isset($_SESSION['Client_id'])) {
                     </li>
                 </ul>
                 <form class="d-flex mb-0">
-                    <button type="button" class="btn btn-outline-light" type="submit">
-                        <i class="bi-cart-fill me-1"></i>
-                        Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                    </button>
+                    <div class="container">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="navbar-nav me-auto ms-lg-4">
+                        <li class="nav-item px-2 rounded">
+                        <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                                <i class="bi bi-cart4 fs-5"></i>
+                        </a>
+                        </li>
+                    </ul>
                     <?php
                     if (!isset($_SESSION['Client_id'])) {
                     ?>
@@ -113,7 +125,7 @@ if (isset($_SESSION['Client_id'])) {
     </header>
     <!-- Section-->
     <section class="py-5" style="background-color: #d4d6d9;">
-        
+
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 <?php

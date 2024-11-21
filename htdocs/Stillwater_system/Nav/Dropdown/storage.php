@@ -47,6 +47,7 @@ function deleteButton($Item_number)
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -60,6 +61,9 @@ function deleteButton($Item_number)
             window.location.href = url;
         }
     </script>
+    <style>
+
+    </style>
 
     <title>Navigation Menu</title>
 
@@ -87,17 +91,29 @@ function deleteButton($Item_number)
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex mb-0">
-                <ul class="navbar-nav me-auto ms-lg-4">
-                    <li class="nav-item border bg-secondary px-2">
-                        <a class="nav-link text-white-50" href="../../Orderlist/sell.php"><i class="bi bi-cart4 font"></i></a>
-                    </li>
-                </ul>
+                <form class="d-flex">
+                    <div class="container">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="navbar-nav me-auto ms-lg-4">
+                        <li class="nav-item px-2 rounded">
+                            <button class="btn btn-secondary rounded" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi bi-cart4 fs-5"></i>
+                            </button>
+                        </li>
+                    </ul>
 
                     <?php
                     if (!isset($_SESSION['Client_id'])) {
                     ?>
-                        <ul class="navbar-nav me-auto ms-lg-4">
+                        <ul class="navbar-nav me-auto ms-lg-4" id="Shop">
                             <li class="nav-item">
                                 <a href="../../loginSystem/log_in.php" class="nav-link active text-white">Login</a>
                             </li>
@@ -111,7 +127,7 @@ function deleteButton($Item_number)
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                 <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
-                                <li><a class="dropdown-item" href="../Nav/Dropdown/storage.php">My Items</a></li>
+                                <li><a class="dropdown-item" href="storage.php">My Items</a></li>
                                 <li><a class="dropdown-item" href="../../loginSystem/log_out.php">Logout</a></li>
                             </ul>
                         </div>
@@ -141,7 +157,6 @@ function deleteButton($Item_number)
                                 die("Query failed: " . mysqli_error($conn));
                             }
                 ?>
-
                             <div class="col mb-5">
                                 <a onclick="openOrder1(<?php echo $row['Item_number']; ?>); return false;" style="cursor: pointer; text-decoration: none;">
                                     <div class="card h-100">
@@ -174,6 +189,14 @@ function deleteButton($Item_number)
             </div>
         </div>
     </section>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap JS and dependencies (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"> <!-- Bootstrap Icons -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
