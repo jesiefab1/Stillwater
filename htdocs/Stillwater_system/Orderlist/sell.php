@@ -7,8 +7,10 @@ include('../db_connection.php');
 // Get the Client_id from the session
 if (isset($_SESSION['Client_id'])) {
     $client_id = $_SESSION['Client_id'];
+} else {
+    header('Location: ../Home/Home.php');
+    exit;
 }
-
 $noLogin = !isset($_SESSION['Client_id']); // Check if the user is not logged in
 
 // Check if form is submitted
@@ -25,10 +27,43 @@ if (isset($_POST['submit'])) {
 
     // Check if the query is executed
     if ($result) {
+        $item_number = mysqli_insert_id($conn);
         echo "<script>alert('Item added successfully!');</script>";
     } else {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
+}
+
+// Handle file upload
+if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['itemImage']['tmp_name'];
+    $fileName = $_FILES['itemImage']['name'];
+    $fileSize = $_FILES['itemImage']['size'];
+    $fileType = $_FILES['itemImage']['type'];
+    $fileNameCmps = explode(".", $fileName);
+    $fileExtension = strtolower(end($fileNameCmps));
+
+    // Specify the directory where the file will be saved
+    $uploadFileDir = 'uploads/';
+    $dest_path = $uploadFileDir . $fileName;
+
+    // Move the file to the specified directory
+    if(move_uploaded_file($fileTmpPath, $dest_path)) {
+        // Prepare and bind
+        $query = "INSERT INTO Upload (Item_number, filepath) VALUES ('$item_number', '$dest_path')";
+        $result = mysqli_query($conn, $query);
+
+        // Check if the query is executed
+        if ($result) {
+            echo "<script>alert('Item added successfully!');</script>";
+        } else {
+            echo "Error: " . $query . "<br>" . mysqli_error($conn);
+        }
+    } else {
+        echo "Error moving the uploaded file.";
+    }
+} else {
+    echo "No file uploaded or there was an upload error.";
 }
 ?>
 
@@ -45,6 +80,7 @@ if (isset($_POST['submit'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -192,6 +228,8 @@ if (isset($_POST['submit'])) {
                     $('.file-upload-image').attr('src', e.target.result); // image element : set src data.
                     $('.file-upload-preview').show(); // image element's container : show
                     $('.image-title').html(inputFileData.name); // set image's title
+                    document.getElementById('addImageBtn').style.display = 'none';
+                    document.getElementById('removeImageBtn').style.display = 'inline-block';
                 };
                 console.log('input.files[0]', input.files[0])
                 reader.readAsDataURL(inputFileData); // reads target inputFileData, launch `.onload` actions
@@ -205,6 +243,10 @@ if (isset($_POST['submit'])) {
             $('.file-upload-input').replaceWith($clone); // reset input: replaced by empty clone
             $('.file-upload-placeholder').show(); // show placeholder
             $('.file-upload-preview').hide(); // hide preview
+
+            // Show the Add Image button and hide the Remove Image button
+            document.getElementById('addImageBtn').style.display = 'inline-block';
+            document.getElementById('removeImageBtn').style.display = 'none';
         }
 
         // Style when drag-over
@@ -225,7 +267,7 @@ if (isset($_POST['submit'])) {
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="Home.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="../Home/Home.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link text-white-50" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
@@ -244,7 +286,7 @@ if (isset($_POST['submit'])) {
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
+                                <button class="btn btn-primary" type="button" style="height: 38px;">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -252,7 +294,7 @@ if (isset($_POST['submit'])) {
                     </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
-                            <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                            <a href="../Orderlist/sell.php" class="btn btn-secondary rounded d-flex justify-content-center align-items-center" role="button" style="height: 44px;">
                                 <i class="bi bi-cart4 fs-5"></i>
                             </a>
                         </li>
@@ -269,7 +311,7 @@ if (isset($_POST['submit'])) {
                     } else {
                     ?>
                         <div class="dropdown ms-3">
-                            <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 44px;">
                                 <i class="bi bi-person-circle fs-5"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
@@ -281,8 +323,6 @@ if (isset($_POST['submit'])) {
                     <?php
                     }
                     ?>
-
-                    <!-- Make a form that can let clients sell their items and upload its picture -->
                 </form>
             </div>
         </div>
@@ -294,10 +334,10 @@ if (isset($_POST['submit'])) {
             <form method="POST" action="" enctype="multipart/form-data">
                 <div class="file-upload">
 
-                    <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+                <button class="file-upload-btn" type="button" id="addImageBtn" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
 
                     <div class="file-upload-placeholder">
-                        <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
+                        <input class="file-upload-input" type='file' name="itemImage" onchange="readURL(this);" accept="image/*">
                         <div class="drag-text">
                             <h3>Drag and drop a file or select add Image</h3>
                         </div>
@@ -306,7 +346,7 @@ if (isset($_POST['submit'])) {
                     <div class="file-upload-preview">
                         <img class="file-upload-image" src="#" alt="your image" />
                         <div class="file-upload-remove">
-                            <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+                            <button type="button" onclick="removeUpload()" class="remove-image" id="removeImageBtn">Remove Uploaded Image</button>
                         </div>
                     </div>
 
@@ -337,6 +377,13 @@ if (isset($_POST['submit'])) {
             </form>
         </div>
     </section>
+    <?php
+        if (isset($_POST['submit'])) {
+            echo "<pre>";
+                print_r($_FILES['itemImage']);
+            echo "<pre>";
+        }
+    ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

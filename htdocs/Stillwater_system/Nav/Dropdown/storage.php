@@ -104,7 +104,7 @@ function deleteButton($Item_number)
                     </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
-                        <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                        <a href="../../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
                                 <i class="bi bi-cart4 fs-5"></i>
                         </a>
                         </li>
