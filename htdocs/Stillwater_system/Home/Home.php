@@ -137,16 +137,22 @@ if (isset($_SESSION['Client_id'])) {
 
                 $result = mysqli_query($conn, $query);
 
-                if (!$result) {
+                if (!$result && !$resultImage) {
                     die("Query failed: " . mysqli_error($conn));
                 }
 
                 while ($row = mysqli_fetch_array($result)) {
+                    // Fetch the image for the current item
+                    $item_number = $row['Item_number'];
+                    $queryImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'";
+                    $resultImage = mysqli_query($conn, $queryImage);
+                    $imageRow = mysqli_fetch_array($resultImage);
+                    $imageSrc = $imageRow ? $imageRow['filepath'] : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image if no image found
                 ?>
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <img class="card-img-top" src="<?php echo $imageSrc; ?>" alt="<?php echo htmlspecialchars($row['Item_name']); ?>" />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">

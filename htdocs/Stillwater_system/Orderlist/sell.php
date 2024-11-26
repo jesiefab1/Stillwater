@@ -40,17 +40,26 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
     $fileName = $_FILES['itemImage']['name'];
     $fileSize = $_FILES['itemImage']['size'];
     $fileType = $_FILES['itemImage']['type'];
-    $fileNameCmps = explode(".", $fileName);
-    $fileExtension = strtolower(end($fileNameCmps));
+
+    // File validation and processing
+    $allowedFilesTypes = ['image/jpeg', 'image/jpg', 'image/png']; // jpeg, jpg, png
+    $maxFilesSizeLimit = 2 * 1024 * 1024; // 2mb max
+
+    if (!in_array($fileType, $allowedFilesTypes)) {
+        echo "<script> alert('Uploaded file not in allowed list')</script>;";
+    }
+
+    if ($fileSize > $maxFilesSizeLimit) {
+        echo "<script> alert('Uploaded file has exceeded the allowed limit')</script>;";
+    }
 
     // Specify the directory where the file will be saved
-    $uploadFileDir = 'uploads/';
-    $dest_path = $uploadFileDir . $fileName;
+    $uploadFileDir = 'uploads/' . basename($fileName);
 
     // Move the file to the specified directory
-    if(move_uploaded_file($fileTmpPath, $dest_path)) {
+    if(move_uploaded_file($fileTmpPath, $uploadFileDir)) {
         // Prepare and bind
-        $query = "INSERT INTO Upload (Item_number, filepath) VALUES ('$item_number', '$dest_path')";
+        $query = "INSERT INTO Uploads (Item_number, filepath) VALUES ('$item_number', '$uploadFileDir')";
         $result = mysqli_query($conn, $query);
 
         // Check if the query is executed
@@ -367,10 +376,10 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                     <label for="condition" class="form-label">Condition</label>
                     <select class="form-select" id="condition" name="condition" required>
                         <option value="" disabled selected>Select condition</option>
-                        <option value="New">Pristine</option>
-                        <option value="Like New">Good</option>
-                        <option value="Used">Bad</option>
-                        <option value="For Parts">Very Bad</option>
+                        <option value="Very Good">Very Good</option>
+                        <option value="Good">Good</option>
+                        <option value="Bad">Bad</option>
+                        <option value="Very Bad">Very Bad</option>
                     </select>
                 </div>
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
