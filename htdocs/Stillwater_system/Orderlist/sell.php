@@ -2,7 +2,7 @@
 // Start the session
 session_start();
 
-include('../db_connection.php');
+include '../db_connection.php';
 
 // Get the Client_id from the session
 if (isset($_SESSION['Client_id'])) {
@@ -42,35 +42,35 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
     $fileType = $_FILES['itemImage']['type'];
 
     // File validation and processing
-    $allowedFilesTypes = ['image/jpeg', 'image/jpg', 'image/png']; // jpeg, jpg, png
+    $allowedFilesTypes = ['image/JPG', 'image/jpeg', 'image/jpg', 'image/png']; // jpeg, jpg, png, JPG
     $maxFilesSizeLimit = 2 * 1024 * 1024; // 2mb max
 
     if (!in_array($fileType, $allowedFilesTypes)) {
         echo "<script> alert('Uploaded file not in allowed list')</script>;";
-    }
 
-    if ($fileSize > $maxFilesSizeLimit) {
+    } elseif ($fileSize > $maxFilesSizeLimit) {
         echo "<script> alert('Uploaded file has exceeded the allowed limit')</script>;";
-    }
-
-    // Specify the directory where the file will be saved
-    $uploadFileDir = 'uploads/' . basename($fileName);
-
-    // Move the file to the specified directory
-    if(move_uploaded_file($fileTmpPath, $uploadFileDir)) {
-        // Prepare and bind
-        $query = "INSERT INTO Uploads (Item_number, filepath) VALUES ('$item_number', '$uploadFileDir')";
-        $result = mysqli_query($conn, $query);
-
-        // Check if the query is executed
-        if ($result) {
-            echo "<script>alert('Item added successfully!');</script>";
-        } else {
-            echo "Error: " . $query . "<br>" . mysqli_error($conn);
-        }
     } else {
-        echo "Error moving the uploaded file.";
+        // Specify the directory where the file will be saved
+        $uploadFileDir = 'uploads/' . basename($fileName);
+
+        // Move the file to the specified directory
+        if (move_uploaded_file($fileTmpPath, $uploadFileDir)) {
+            // Prepare and bind
+            $query = "INSERT INTO Uploads (Item_number, filepath) VALUES ('$item_number', '$uploadFileDir')";
+            $result = mysqli_query($conn, $query);
+
+            // Check if the query is executed
+            if ($result) {
+                echo "<script>alert('Item added successfully!');</script>";
+            } else {
+                echo "Error: " . $query . "<br>" . mysqli_error($conn);
+            }
+        } else {
+            echo "Error moving the uploaded file.";
+        }
     }
+
 } else {
     echo "No file uploaded or there was an upload error.";
 }
@@ -309,16 +309,16 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                         </li>
                     </ul>
                     <?php
-                    if (!isset($_SESSION['Client_id'])) {
-                    ?>
+if (!isset($_SESSION['Client_id'])) {
+    ?>
                         <ul class="navbar-nav me-auto ms-lg-4">
                             <li class="nav-item">
                                 <a href="../loginSystem/log_in.php" class="nav-link active text-white">Login</a>
                             </li>
                         </ul>
                     <?php
-                    } else {
-                    ?>
+} else {
+    ?>
                         <div class="dropdown ms-3">
                             <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 44px;">
                                 <i class="bi bi-person-circle fs-5"></i>
@@ -330,8 +330,8 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                             </ul>
                         </div>
                     <?php
-                    }
-                    ?>
+}
+?>
                 </form>
             </div>
         </div>
@@ -360,6 +360,7 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                     </div>
 
                 </div>
+
                 <div class="mb-3">
                     <label for="Item_name" class="form-label">Item Name</label>
                     <input type="text" class="form-control" id="Item_name" name="Item_name" required>
@@ -387,12 +388,12 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
         </div>
     </section>
     <?php
-        if (isset($_POST['submit'])) {
-            echo "<pre>";
-                print_r($_FILES['itemImage']);
-            echo "<pre>";
-        }
-    ?>
+if (isset($_POST['submit'])) {
+    echo "<pre>";
+    print_r($_FILES['itemImage']);
+    echo "<pre>";
+}
+?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

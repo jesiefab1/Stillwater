@@ -2,8 +2,6 @@
 session_start();
 include '../db_connection.php';
 
-$client_id = "";
-
 if (isset($_SESSION['UserType'])) {
     $UserType = $_SESSION['UserType'];
 }
@@ -146,13 +144,20 @@ if (isset($_SESSION['Client_id'])) {
                     $item_number = $row['Item_number'];
                     $queryImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'";
                     $resultImage = mysqli_query($conn, $queryImage);
+                
+                    if (!$resultImage) {
+                        echo "Error: " . mysqli_error($conn);
+                        continue; // Skip this iteration if there's an error
+                    }
+                
+                    
                     $imageRow = mysqli_fetch_array($resultImage);
-                    $imageSrc = $imageRow ? $imageRow['filepath'] : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image if no image found
+                    $imageSrc = $imageRow && filter_var($imageRow['filepath'], FILTER_VALIDATE_URL) ? $imageRow['filepath'] : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image if no image found
                 ?>
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->
-                            <img class="card-img-top" src="<?php echo $imageSrc; ?>" alt="<?php echo htmlspecialchars($row['Item_name']); ?>" />
+                            <img class="card-img-top" src="<?php echo $imageSrc; ?>" alt="Item Picture" />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">
@@ -168,6 +173,7 @@ if (isset($_SESSION['Client_id'])) {
                             </div>
                         </div>
                     </div>
+                    
                 <?php
                 }
                 ?>
@@ -182,8 +188,6 @@ if (isset($_SESSION['Client_id'])) {
     </footer>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
-    <script src="js/scripts.js"></script>
 </body>
 
 </html>
