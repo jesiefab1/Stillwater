@@ -91,9 +91,14 @@ if (isset($message) && isset($alert_type)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="image_display.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <title>Update Item</title>
 
     <style>
@@ -282,7 +287,10 @@ if (isset($message) && isset($alert_type)) {
             <!-- Grid row -->
             <div class="row">
                 <!-- Grid column for item image -->
-                <div class="col-md-6 mb-4">
+                <div class="col-md-6 mb-4" style="position: relative; height: 300px;"> <!-- Set a height for the column -->
+                    <div class="preview col-md-6">
+
+                    </div>
                     <?php
                     // Initialize $imageSrc with a default image
                     $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
@@ -296,22 +304,83 @@ if (isset($message) && isset($alert_type)) {
 
                     // Check if the image exists and is a valid path
                     if ($imageRow && !empty($imageRow['filepath'])) {
-                        $localImagePath = '../../Orderlist/' . $imageRow['filepath']; // Construct the local path
+                        $localImagePath = '../../../Orderlist/' . $imageRow['filepath']; // Construct the local path
                         if (file_exists($localImagePath)) {
                             $imageSrc = $localImagePath; // Use the local image path if it exists
                         }
                     }
                     ?>
-                    <img src="<?php echo $imageSrc; ?>" class="img-fluid" alt="<?php echo htmlspecialchars($row['Item_name']); ?>" />
+                    <div class="preview col-md-6">
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="preview-pic tab-content">
+                                        <?php
+                                        // Check if there are images available
+                                        if (mysqli_num_rows($queryImage) > 0) {
+                                            $firstImage = true; // Flag to identify the first image for the active class
+                                            // Loop through each image from the query result
+                                            while ($imageRow1 = mysqli_fetch_assoc($queryImage)) {
+                                                $localImagePath1 = '../../../Orderlist/' . $imageRow1['filepath']; // Construct the local path
+
+                                                // Debugging: Output the constructed path
+                                                echo '<!-- Debug: Checking file path: ' . $localImagePath1 . ' -->';
+
+                                                // Check if the image file exists
+                                                if (file_exists($localImagePath1)) {
+                                                    $imageSrc1 = htmlspecialchars($localImagePath1); // Use the local image path if it exists
+                                        ?>
+                                                    <div class="tab-pane <?php echo $firstImage ? 'active' : ''; ?>" id="pic-<?php echo htmlspecialchars($imageRow1['upload_id']); ?>">
+                                                        <img src="<?php echo $imageSrc1; ?>" alt="<?php echo htmlspecialchars($row['Item_name']); ?>" class="img-fluid">
+                                                    </div>
+                                        <?php
+                                                    $firstImage = false; // After the first iteration, set the flag to false
+                                                }
+                                            }
+                                        } else {
+                                            echo '<p>No images available.</p>'; // Message if no images are found
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <ul class="preview-thumbnail nav nav-tabs">
+                                        <?php
+                                        // Reset the result pointer to the beginning for thumbnails
+                                        mysqli_data_seek($queryImage, 0);
+                                        $firstThumbnail = true; // Flag to identify the first thumbnail for the active class
+                                        if (mysqli_num_rows($queryImage) > 0) {
+                                            while ($imageRow1 = mysqli_fetch_assoc($queryImage)) {
+                                                $localImagePath1 = '../../../Orderlist/' . $imageRow1['filepath']; // Construct the local path
+
+                                                // Check if the image file exists
+                                                if (file_exists($localImagePath1)) {
+                                                    $imageSrc1 = htmlspecialchars($localImagePath1); // Use the local image path if it exists
+                                        ?>
+                                                    <li class="<?php echo $firstThumbnail ? 'active' : ''; ?>">
+                                                        <a data-target="#pic-<?php echo htmlspecialchars($imageRow1['upload_id']); ?>" data-toggle="tab">
+                                                            <img src="<?php echo $imageSrc1; ?>" alt="<?php echo htmlspecialchars($row['Item_name']); ?>" class="img-thumbnail">
+                                                        </a>
+                                                    </li>
+                                        <?php
+                                                    $firstThumbnail = false; // After the first iteration, set the flag to false
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
                 <!-- Grid column for item details -->
                 <div class="col-md-6 mb-4">
                     <div class="p-4">
                         <p id="notification" class="alert"></p>
                         <form id="updateItemForm" method="post">
-
                             <input type="hidden" name="Item_number" value="<?php echo htmlspecialchars($row['Item_number']); ?>">
-
                             <h4>
                                 <input type="text" name="Item_name" value="<?php echo htmlspecialchars($row['Item_name']); ?>" required>
                             </h4>
@@ -336,40 +405,40 @@ if (isset($message) && isset($alert_type)) {
         </div>
     </main>
     <script>
-jQuery.noConflict();
-jQuery(document).ready(function($) {
-    $('#updateItemForm').on('submit', function(e) {
-        e.preventDefault(); // Prevent the default form submission
+        jQuery.noConflict();
+        jQuery(document).ready(function($) {
+            $('#updateItemForm').on('submit', function(e) {
+                e.preventDefault(); // Prevent the default form submission
 
-        // Create a data object to hold form data
-        var formData = {
-            Item_number: $('input[name="Item_number"]').val(),
-            Item_name: $('input[name="Item_name"]').val(),
-            Condition: $('input[name="Condition"]').val(),
-            Asking_price: $('input[name="Asking_price"]').val(),
-            Description: $('textarea[name="Description"]').val()
-        };
+                // Create a data object to hold form data
+                var formData = {
+                    Item_number: $('input[name="Item_number"]').val(),
+                    Item_name: $('input[name="Item_name"]').val(),
+                    Condition: $('input[name="Condition"]').val(),
+                    Asking_price: $('input[name="Asking_price"]').val(),
+                    Description: $('textarea[name="Description"]').val()
+                };
 
-        $.ajax({
-            type: 'POST',
-            url: 'update_item_function.php',
-            data: $.param(formData),
-            dataType: 'json',
-            success: function(response) {
-                $('#notification').removeClass('alert-danger alert-success');
-                $('#notification').addClass(response.alert_type);
-                $('#notification').html(response.message);
-                $('#notification').show();
-            },
-            error: function(xhr, status, error) {
-                $('#notification').removeClass('alert-danger alert-success');
-                $('#notification').addClass('alert-danger');
-                $('#notification').html('An error occurred: ' + xhr.responseText);
-                $('#notification').show();
-            }
+                $.ajax({
+                    type: 'POST',
+                    url: 'update_item_function.php',
+                    data: $.param(formData),
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#notification').removeClass('alert-danger alert-success');
+                        $('#notification').addClass(response.alert_type);
+                        $('#notification').html(response.message);
+                        $('#notification').show();
+                    },
+                    error: function(xhr, status, error) {
+                        $('#notification').removeClass('alert-danger alert-success');
+                        $('#notification').addClass('alert-danger');
+                        $('#notification').html('An error occurred: ' + xhr.responseText);
+                        $('#notification').show();
+                    }
+                });
+            });
         });
-    });
-});
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
