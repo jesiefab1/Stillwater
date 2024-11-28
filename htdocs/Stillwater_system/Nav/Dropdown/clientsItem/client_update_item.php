@@ -1,9 +1,18 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Include database connection file
 include('../../../db_connection.php');
 
+// Start session
 session_start();
+
+// Debugging: Check if the database connection is successful
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Get the Client_id from the session
 if (isset($_SESSION['Client_id'])) {
@@ -13,46 +22,35 @@ if (isset($_SESSION['Client_id'])) {
     exit();
 }
 
+// Initialize variables for debugging
+$Item_number = null;
+$message = '';
+$alert_type = '';
+
+// Check if Item_number and Client_id are set in the URL
 if (isset($_GET['Item_number'])) {
     $Item_number = $_GET['Item_number'];
 } elseif (isset($_POST['Item_number'])) {
     $Item_number = $_POST['Item_number'];
 }
 
-// Check if Item_number and Client_id are set in the URL
-if (isset($Item_number)) {
+// Debugging: Log the Item_number
+error_log("Item_number: " . print_r($Item_number, true));
 
-    $query = "SELECT * FROM Item WHERE Item_number = ?"; // Specify the columns to select
+// Check if Item_number is set
+if (isset($Item_number)) {
+    $query = "SELECT * FROM Item WHERE Item_number = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $Item_number); // Only bind $Item_number
+    $stmt->bind_param("s", $Item_number);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $Item_number = $_POST['Item_number'];
-        $Item_name = $_POST['Item_name'];
-        $Condition = $_POST['Condition'];
-        $Asking_price = $_POST['Asking_price'];
-        $Description = $_POST['Description'];
-
-        // Update item details
-        $update_query = "UPDATE Item SET Item_name = ?, `Condition` = ?, Asking_price = ?, Item_description = ? WHERE Item_number = ?";
-        $stmt = $conn->prepare($update_query);
-        $stmt->bind_param("ssssi", $Item_name, $Condition, $Asking_price, $Description, $Item_number);
-
-        if ($stmt->execute()) {
-            $message = "Item updated successfully.";
-            $alert_type = "alert-success"; // Bootstrap success alert
-        } else {
-            $message = "Error updating item.";
-            $alert_type = "alert-danger"; // Bootstrap error alert
-        }
-    }
-
     // Check if the item was found
     if (!$row) {
-        echo "<script>alert('Item not found.'); window.location.href='../Home/Home.php';</script>";
+        $message = 'Item not found.';
+        $alert_type = 'alert-danger';
+        echo "<script>alert('$message'); window.location.href='../Home/Home.php';</script>";
         exit();
     }
 
@@ -65,17 +63,26 @@ if (isset($Item_number)) {
     $highestBidRow = $highestBidResult->fetch_assoc();
     $highestBid = isset($highestBidRow['Highest_bid']) ? $highestBidRow['Highest_bid'] : $row['Asking_price'];
 } else {
-    echo "Invalid request.";
+    $message = 'Invalid request.';
+    $alert_type = 'alert-danger';
     exit();
 }
-echo "<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var notification = document.getElementById('notification');
-    notification.className += ' $alert_type';
-    notification.innerHTML = '" . htmlspecialchars($message) . "';
-    notification.style.display = 'block';
-});
-</script>";
+
+// Debugging: Output message and alert type
+error_log("Message: " . print_r($message, true));
+error_log("Alert Type: " . print_r($alert_type, true));
+
+// Output the notification script
+if (isset($message) && isset($alert_type)) {
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var notification = document.getElementById('notification');
+        notification.className += ' $alert_type';
+        notification.innerHTML = '" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "';
+        notification.style.display = 'block';
+    });
+    </script>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,62 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <title>Update Item</title>
-
-    <script>
-        function readURL(input) {
-            if (input.files && input.files[0]) { // if input is file, files has content
-                var inputFileData = input.files[0]; // shortcut
-                var reader = new FileReader(); // FileReader() : init
-                reader.onload = function(e) {
-                    /* FileReader : set up ************** */
-                    console.log('e', e)
-                    $('.file-upload-placeholder').hide(); // call for action element : hide
-                    $('.file-upload-image').attr('src', e.target.result); // image element : set src data.
-                    $('.file-upload-preview').show(); // image element's container : show
-                    $('.image-title').html(inputFileData.name); // set image's title
-                    document.getElementById('addImageBtn').style.display = 'none';
-                    document.getElementById('removeImageBtn').style.display = 'inline-block';
-                };
-                console.log('input.files[0]', input.files[0])
-                reader.readAsDataURL(inputFileData); // reads target inputFileData, launch `.onload` actions
-            } else {
-                removeUpload();
-            }
-        }
-
-        function removeUpload() {
-            var $clone = $('.file-upload-input').val('').clone(true); // create empty clone
-            $('.file-upload-input').replaceWith($clone); // reset input: replaced by empty clone
-            $('.file-upload-placeholder').show(); // show placeholder
-            $('.file-upload-preview').hide(); // hide preview
-
-            // Show the Add Image button and hide the Remove Image button
-            document.getElementById('addImageBtn').style.display = 'inline-block';
-            document.getElementById('removeImageBtn').style.display = 'none';
-        }
-
-        // Style when drag-over
-        $('.file-upload-placeholder').bind('dragover', function() {
-            $('.file-upload-placeholder').addClass('image-dropping');
-        });
-        $('.file-upload-placeholder').bind('dragleave', function() {
-            $('.file-upload-placeholder').removeClass('image-dropping');
-        });
-    </script>
 
     <style>
         .file-upload {
@@ -257,6 +212,10 @@ document.addEventListener('DOMContentLoaded', function() {
             border: 0;
             transition: all .2s ease;
         }
+
+        #notification {
+            display: none;
+        }
     </style>
 </head>
 <!-- Navigation-->
@@ -325,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Grid column for item image -->
                 <div class="col-md-6 mb-4">
                     <?php
-                        // Initialize $imageSrc with a default image
+                    // Initialize $imageSrc with a default image
                     $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
 
                     // Fetch the image for the current item
@@ -348,8 +307,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Grid column for item details -->
                 <div class="col-md-6 mb-4">
                     <div class="p-4">
-                        <p id="notification"></p>
-                        <form action="client_update_item.php" method="post">
+                        <p id="notification" class="alert"></p>
+                        <form id="updateItemForm" method="post">
 
                             <input type="hidden" name="Item_number" value="<?php echo htmlspecialchars($row['Item_number']); ?>">
 
@@ -376,10 +335,43 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </main>
+    <script>
+jQuery.noConflict();
+jQuery(document).ready(function($) {
+    $('#updateItemForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Create a data object to hold form data
+        var formData = {
+            Item_number: $('input[name="Item_number"]').val(),
+            Item_name: $('input[name="Item_name"]').val(),
+            Condition: $('input[name="Condition"]').val(),
+            Asking_price: $('input[name="Asking_price"]').val(),
+            Description: $('textarea[name="Description"]').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: 'update_item_function.php',
+            data: $.param(formData),
+            dataType: 'json',
+            success: function(response) {
+                $('#notification').removeClass('alert-danger alert-success');
+                $('#notification').addClass(response.alert_type);
+                $('#notification').html(response.message);
+                $('#notification').show();
+            },
+            error: function(xhr, status, error) {
+                $('#notification').removeClass('alert-danger alert-success');
+                $('#notification').addClass('alert-danger');
+                $('#notification').html('An error occurred: ' + xhr.responseText);
+                $('#notification').show();
+            }
+        });
+    });
+});
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
