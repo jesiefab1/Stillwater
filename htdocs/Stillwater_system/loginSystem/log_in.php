@@ -233,7 +233,7 @@
                     const nonce = generateNonce();
                     const clientId = '175487461829-um8ubpj71oi097ug21komlb88f52qa5p.apps.googleusercontent.com'; // Client ID Here
                     // Change the redirectUri Based on your {LoginPage.php} Web Link (Get the link when you open the {LoginPage.php} Page and replace here)
-                    const redirectUri = 'https://effective-capybara-6944vgj6jjq72rxvw-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
+                    const redirectUri = 'https://redesigned-funicular-5v4x4r6qrpf4g4w-8000.app.github.dev/htdocs/Stillwater_system/loginSystem/log_in.php'; // Changed from redirectUrl to redirectUri
                     const scope = 'openid email profile';
                     const responseType = 'id_token';
                     const prompt = 'select_account';

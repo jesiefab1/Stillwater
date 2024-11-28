@@ -46,6 +46,17 @@ if (isset($_SESSION['Client_id'])) {
             window.location.href = url;
         }
     </script>
+    <style>
+    .hover-card {
+        transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for effects */
+    }
+
+    .hover-card:hover {
+        transform: scale(1.05); /* Slightly enlarge the card */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow effect */
+        border: 2px solid #007bff; /* Optional: add a border on hover */
+    }
+    </style>
 </head>
 
 <body>
@@ -58,17 +69,6 @@ if (isset($_SESSION['Client_id'])) {
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="Home.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link text-white-50" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <form class="d-flex mb-0">
                     <div class="container">
@@ -83,9 +83,9 @@ if (isset($_SESSION['Client_id'])) {
                     </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
-                        <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                            <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
                                 <i class="bi bi-cart4 fs-5"></i>
-                        </a>
+                            </a>
                         </li>
                     </ul>
                     <?php
@@ -135,45 +135,51 @@ if (isset($_SESSION['Client_id'])) {
 
                 $result = mysqli_query($conn, $query);
 
-                if (!$result && !$resultImage) {
+                if (!$result) {
                     die("Query failed: " . mysqli_error($conn));
                 }
 
                 while ($row = mysqli_fetch_array($result)) {
+                    // Initialize $imageSrc with a default image
+                    $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
+
                     // Fetch the image for the current item
                     $item_number = $row['Item_number'];
-                    $queryImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'";
-                    $resultImage = mysqli_query($conn, $queryImage);
-                
-                    if (!$resultImage) {
+                    $sqlImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'"; // Use quotes around $item_number
+                    $queryImage = mysqli_query($conn, $sqlImage);
+
+                    if (!$queryImage) {
                         echo "Error: " . mysqli_error($conn);
                         continue; // Skip this iteration if there's an error
                     }
-                
-                    
-                    $imageRow = mysqli_fetch_array($resultImage);
-                    $imageSrc = $imageRow && filter_var($imageRow['filepath'], FILTER_VALIDATE_URL) ? $imageRow['filepath'] : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image if no image found
+
+                    $imageRow = mysqli_fetch_assoc($queryImage);
+
+
+                    // Check if the image exists and is a valid path
+                    if ($imageRow && !empty($imageRow['filepath'])) {
+                        $localImagePath = '../Orderlist/' . $imageRow['filepath']; // Construct the local path
+                        if (file_exists($localImagePath)) {
+                            $imageSrc = $localImagePath; // Use the local image path if it exists
+                        }
+                    }
+
+
+
                 ?>
                     <div class="col mb-5">
-                        <div class="card h-100">
-                            <!-- Product image-->
-                            <img class="card-img-top" src="<?php echo $imageSrc; ?>" alt="Item Picture" />
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder"><?php echo $row['Item_name']; ?></h5>
-                                    <!-- Product price-->
-                                    <?php echo '₱ ' . number_format($row['Asking_price'], 2); ?>
+                        <a onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" style="cursor: pointer; text-decoration: none;">
+                            <div class="card h-100 hover-card" style="border-radius: 8px; overflow: hidden; transition: transform 0.2s;">
+                                <img class="card-img-top" src="<?php echo htmlspecialchars($imageSrc); ?>" alt="Item Picture" style="object-fit: cover; height: 200px; width: 100%;" />
+                                <div class="card-body p-3">
+                                    <div class="text-center">
+                                        <h5 class="fw-bolder" style="font-size: 1.1rem;"><?php echo htmlspecialchars($row['Item_name']); ?></h5>
+                                        <p class="text-danger" style="font-size: 1.2rem;"><?php echo '₱ ' . number_format($row['Asking_price'], 2); ?></p>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><button onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" class="btn btn-outline-dark mt-auto">More</button></div>
-                            </div>
-                        </div>
+                        </a>
                     </div>
-                    
                 <?php
                 }
                 ?>

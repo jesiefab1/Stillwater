@@ -62,7 +62,15 @@ function deleteButton($Item_number)
         }
     </script>
     <style>
+    .hover-card {
+        transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for effects */
+    }
 
+    .hover-card:hover {
+        transform: scale(1.05); /* Slightly enlarge the card */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow effect */
+        border: 2px solid #007bff; /* Optional: add a border on hover */
+    }
     </style>
 
     <title>Navigation Menu</title>
@@ -104,9 +112,9 @@ function deleteButton($Item_number)
                     </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
-                        <a href="../../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
+                            <a href="../../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
                                 <i class="bi bi-cart4 fs-5"></i>
-                        </a>
+                            </a>
                         </li>
                     </ul>
 
@@ -153,24 +161,36 @@ function deleteButton($Item_number)
                             $commission = $row['Asking_price'] * $commission_rate / 100;
                             setlocale(LC_MONETARY, 'c', 'en-PH');
 
+                            $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
+
+                            // Fetch the image for the current item
+                            $item_number = $row['Item_number'];
+                            $sqlImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'"; // Use quotes around $item_number
+                            $queryImage = mysqli_query($conn, $sqlImage);
+
+                            $imageRow = mysqli_fetch_assoc($queryImage);
+
+
+                            // Check if the image exists and is a valid path
+                            if ($imageRow && !empty($imageRow['filepath'])) {
+                                $localImagePath = '../../Orderlist/' . $imageRow['filepath']; // Construct the local path
+                                if (file_exists($localImagePath)) {
+                                    $imageSrc = $localImagePath; // Use the local image path if it exists
+                                }
+                            }
+
                             if (!$result) {
                                 die("Query failed: " . mysqli_error($conn));
                             }
                 ?>
                             <div class="col mb-5">
                                 <a onclick="openOrder1(<?php echo $row['Item_number']; ?>); return false;" style="cursor: pointer; text-decoration: none;">
-                                    <div class="card h-100">
-                                        <!-- Product image-->
-                                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                                        <!-- Product details-->
-                                        <div class="card-body p-4">
+                                    <div class="card h-100 hover-card" style="border-radius: 8px; overflow: hidden; transition: transform 0.2s;">
+                                        <img class="card-img-top" src="<?php echo htmlspecialchars($imageSrc); ?>" alt="Item Picture" style="object-fit: cover; height: 200px; width: 100%;" />
+                                        <div class="card-body p-3">
                                             <div class="text-center">
-                                                <!-- Product name-->
-                                                <h5 class="fw-bolder"><?php echo $row['Item_name']; ?></h5>
-                                                <!-- Product price-->
-                                                <?php echo '₱ ' . number_format($row['Asking_price'], 2); ?>
-                                                <!-- Product description-->
-                                                <?php echo $row['Item_description']; ?>
+                                                <h5 class="fw-bolder" style="font-size: 1.1rem;"><?php echo htmlspecialchars($row['Item_name']); ?></h5>
+                                                <p class="text-danger" style="font-size: 1.2rem;"><?php echo '₱ ' . number_format($row['Asking_price'], 2); ?></p>
                                             </div>
                                         </div>
                                     </div>

@@ -47,12 +47,13 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
 
     if (!in_array($fileType, $allowedFilesTypes)) {
         echo "<script> alert('Uploaded file not in allowed list')</script>;";
-
     } elseif ($fileSize > $maxFilesSizeLimit) {
         echo "<script> alert('Uploaded file has exceeded the allowed limit')</script>;";
     } else {
         // Specify the directory where the file will be saved
-        $uploadFileDir = 'uploads/' . basename($fileName);
+        $newFileName = uniqid() . '_' .
+        $sanitizedFileName;
+        $uploadFileDir = 'uploads/' . $newFileName;
 
         // Move the file to the specified directory
         if (move_uploaded_file($fileTmpPath, $uploadFileDir)) {
@@ -70,7 +71,6 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
             echo "Error moving the uploaded file.";
         }
     }
-
 } else {
     echo "No file uploaded or there was an upload error.";
 }
@@ -278,17 +278,6 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="../Home/Home.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link text-white-50" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <form class="d-flex mb-0">
                     <div class="container">
@@ -309,16 +298,16 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                         </li>
                     </ul>
                     <?php
-if (!isset($_SESSION['Client_id'])) {
-    ?>
+                    if (!isset($_SESSION['Client_id'])) {
+                    ?>
                         <ul class="navbar-nav me-auto ms-lg-4">
                             <li class="nav-item">
                                 <a href="../loginSystem/log_in.php" class="nav-link active text-white">Login</a>
                             </li>
                         </ul>
                     <?php
-} else {
-    ?>
+                    } else {
+                    ?>
                         <div class="dropdown ms-3">
                             <button class="btn btn-secondary rounded-circle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 44px;">
                                 <i class="bi bi-person-circle fs-5"></i>
@@ -330,8 +319,8 @@ if (!isset($_SESSION['Client_id'])) {
                             </ul>
                         </div>
                     <?php
-}
-?>
+                    }
+                    ?>
                 </form>
             </div>
         </div>
@@ -343,7 +332,7 @@ if (!isset($_SESSION['Client_id'])) {
             <form method="POST" action="" enctype="multipart/form-data">
                 <div class="file-upload">
 
-                <button class="file-upload-btn" type="button" id="addImageBtn" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+                    <button class="file-upload-btn" type="button" id="addImageBtn" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
 
                     <div class="file-upload-placeholder">
                         <input class="file-upload-input" type='file' name="itemImage" onchange="readURL(this);" accept="image/*">
@@ -388,12 +377,12 @@ if (!isset($_SESSION['Client_id'])) {
         </div>
     </section>
     <?php
-if (isset($_POST['submit'])) {
-    echo "<pre>";
-    print_r($_FILES['itemImage']);
-    echo "<pre>";
-}
-?>
+    if (isset($_POST['submit'])) {
+        echo "<pre>";
+        print_r($_FILES['itemImage']);
+        echo "<pre>";
+    }
+    ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

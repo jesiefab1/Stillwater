@@ -83,6 +83,7 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
         .visually-hidden-focusable {
             display: none; /* This class hides the element */
         }
+        
     </style>
     <script>
 
@@ -246,7 +247,9 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
                 <div class="col-md-6 mb-4">
                     <div class="p-4">
                         <h4><?php echo htmlspecialchars($row['Item_name']); ?></h4>
+                        <p>Condition: <?php echo $row['Condition']?></p>
                         <p>Current highest bid: ₱ <?php echo number_format($highestBid, 2); ?></p>
+                        <p>First Price: ₱ <?php echo number_format($row['Asking_price'])?></p>
                         <!--
                         <div class="bg-success p-1 mb-2 text-center fw-bold border rounded text-white background-color-danger" style="display: none;">
                             <p class="mb-1 mt-1" id="successMessage">You have successfully bidded</p>
