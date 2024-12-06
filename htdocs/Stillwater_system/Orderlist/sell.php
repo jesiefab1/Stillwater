@@ -293,7 +293,7 @@ if (isset($_POST['submit'])) {
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg fixed-top container-fluid" style="background-color: #3b1704;">
         <div class="container px-4 px-lg-5">
-            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
+        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogoNew1.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
@@ -301,16 +301,6 @@ if (isset($_POST['submit'])) {
                     <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
                 </ul>
                 <form class="d-flex mb-0">
-                    <div class="container">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" style="height: 38px;">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
                             <a href="../Orderlist/sell.php" class="btn btn-secondary rounded d-flex justify-content-center align-items-center" role="button" style="height: 44px;">
@@ -334,7 +324,6 @@ if (isset($_POST['submit'])) {
                                 <i class="bi bi-person-circle fs-5"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
                                 <li><a class="dropdown-item" href="../Nav/Dropdown/storage.php">My Items</a></li>
                                 <li><a class="dropdown-item" href="../loginSystem/log_out.php">Logout</a></li>
                             </ul>
@@ -348,7 +337,7 @@ if (isset($_POST['submit'])) {
     </nav>
     <!-- Section-->
     <section class="py-5">
-        <div class="container">
+        <div class="container" style="margin-top: 40px;">
             <h2>Sell Your Item</h2>
             <form method="POST" action="" enctype="multipart/form-data">
                 <div class="mb-3">

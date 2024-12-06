@@ -1,3 +1,7 @@
+<?php
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -129,26 +133,16 @@
 
 <body>
     <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg fixed-top container-fluid">
+    <nav class="navbar navbar-expand-lg fixed-top container-fluid"  style="background-color: #3b1704;">
         <div class="container px-4 px-lg-5">
-            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
+        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogoNew1.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="Home.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
+                    <li class="nav-item"><a class="nav-link text-white-50 " href="../Home/Home.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="../Nav/aboutMe.php">About</a></li>
                 </ul>
                 <form class="d-flex mb-0">
-                    <div class="container">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
                             <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
@@ -185,27 +179,9 @@
             </div>
         </div>
     </nav>
-    </head>
 
-    <body>
-        <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid" alt="Company Logo" style="width: 13%;">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="../Home/Home.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../Nav/aboutMe.php">About</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="header">
-        <h1>OUR CORE P ILLARS</h1>
+    <div class="header" style="margin-top: 100px;">
+        <h1>OUR CORE PILLARS</h1>
     </div>
     <div class="container my-5">
         <div class="row">
@@ -241,7 +217,7 @@
 
     <footer class="footer">
         <div class="container">
-            <span class="copyright">© 2023 Your Company</span>
+            <span class="copyright">© 2024 Your Company</span>
             <nav class="nav">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>

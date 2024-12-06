@@ -81,35 +81,14 @@ function deleteButton($Item_number)
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg fixed-top container-fluid" style="background-color: #3b1704;">
         <div class="container px-4 px-lg-5">
-            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
+        <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogoNew1.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active text-white aria-current='page'" href="../../Home/Home.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="../../Nav/aboutMe.php">About</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link text-white-50" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <form class="d-flex">
-                    <div class="container">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
                             <a href="../../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
@@ -134,7 +113,6 @@ function deleteButton($Item_number)
                                 <i class="bi bi-person-circle fs-5"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
                                 <li><a class="dropdown-item" href="storage.php">My Items</a></li>
                                 <li><a class="dropdown-item" href="../../loginSystem/log_out.php">Logout</a></li>
                             </ul>
