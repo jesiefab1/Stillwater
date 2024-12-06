@@ -19,10 +19,12 @@ if (isset($_POST['submit'])) {
     $description = $_POST['description'];
     $asking_price = $_POST['asking_price'];
     $condition = $_POST['condition'];
+    // Convert end time from 'YYYY-MM-DDTHH:MM' to 'YYYY-MM-DD HH:MM:SS'
+    $end_time = str_replace('T', ' ', $_POST['end_time']);
     $is_sold = 0;
 
     // Prepare and bind
-    $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`, Is_sold) VALUES ('$client_id', '$Item_name', '$description', '$asking_price', '$condition', '$is_sold')";
+    $query = "INSERT INTO Item (Client_id, Item_name, Item_description, Asking_price, `Condition`, End_time, Is_sold) VALUES ('$client_id', '$Item_name', '$description', '$asking_price', '$condition', '$end_time', '$is_sold')";
     $result = mysqli_query($conn, $query);
 
     // Check if the query is executed
@@ -32,47 +34,45 @@ if (isset($_POST['submit'])) {
     } else {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
-}
 
-// Handle file upload
-if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_OK) {
-    $fileTmpPath = $_FILES['itemImage']['tmp_name'];
-    $fileName = $_FILES['itemImage']['name'];
-    $fileSize = $_FILES['itemImage']['size'];
-    $fileType = $_FILES['itemImage']['type'];
+    if ($result) {
+        $item_number = mysqli_insert_id($conn);
 
-    // File validation and processing
-    $allowedFilesTypes = ['image/JPG', 'image/jpeg', 'image/jpg', 'image/png']; // jpeg, jpg, png, JPG
-    $maxFilesSizeLimit = 2 * 1024 * 1024; // 2mb max
+        // Handle multiple file uploads
+        if (isset($_FILES['itemImages']) && count($_FILES['itemImages']['name']) > 0) {
+            $allowedFilesTypes = ['image/JPG', 'image/jpeg', 'image/jpg', 'image/png']; // Allowed file types
+            $maxFileSizeLimit = 2 * 1024 * 1024; // 2 MB max size
 
-    if (!in_array($fileType, $allowedFilesTypes)) {
-        echo "<script> alert('Uploaded file not in allowed list')</script>;";
-    } elseif ($fileSize > $maxFilesSizeLimit) {
-        echo "<script> alert('Uploaded file has exceeded the allowed limit')</script>;";
-    } else {
-        // Specify the directory where the file will be saved
-        $newFileName = uniqid() . '_' .
-        $sanitizedFileName;
-        $uploadFileDir = 'uploads/' . $newFileName;
+            foreach ($_FILES['itemImages']['name'] as $index => $name) {
+                $fileTmpPath = $_FILES['itemImages']['tmp_name'][$index];
+                $fileType = $_FILES['itemImages']['type'][$index];
+                $fileSize = $_FILES['itemImages']['size'][$index];
 
-        // Move the file to the specified directory
-        if (move_uploaded_file($fileTmpPath, $uploadFileDir)) {
-            // Prepare and bind
-            $query = "INSERT INTO Uploads (Item_number, filepath) VALUES ('$item_number', '$uploadFileDir')";
-            $result = mysqli_query($conn, $query);
+                if (!in_array($fileType, $allowedFilesTypes)) {
+                    echo "<script>alert('File $name is not a valid image type.')</script>";
+                    continue;
+                }
 
-            // Check if the query is executed
-            if ($result) {
-                echo "<script>alert('Item added successfully!');</script>";
-            } else {
-                echo "Error: " . $query . "<br>" . mysqli_error($conn);
+                if ($fileSize > $maxFileSizeLimit) {
+                    echo "<script>alert('File $name exceeds the maximum size limit.')</script>";
+                    continue;
+                }
+
+                $newFileName = uniqid() . '_' . $name;
+                $uploadFileDir = 'uploads/' . $newFileName;
+
+                if (move_uploaded_file($fileTmpPath, $uploadFileDir)) {
+                    $query = "INSERT INTO Uploads (Item_number, filepath, Status) VALUES ('$item_number', '$uploadFileDir', '0')";
+                    mysqli_query($conn, $query);
+                } else {
+                    echo "<script>alert('Failed to upload $name.')</script>";
+                }
             }
-        } else {
-            echo "Error moving the uploaded file.";
         }
+        echo "<script>alert('Item added successfully!');</script>";
+    } else {
+        echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
-} else {
-    echo "No file uploaded or there was an upload error.";
 }
 ?>
 
@@ -213,6 +213,27 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
             border: 0;
             transition: all .2s ease;
         }
+
+        .preview-container img {
+            max-height: 150px;
+            max-width: 150px;
+            margin: 10px;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preview-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 
     <script>
@@ -326,30 +347,10 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
         </div>
     </nav>
     <!-- Section-->
-    <section class="py-5" style="background-color: #d4d6d9;">
-        <div class="container mt-5">
+    <section class="py-5">
+        <div class="container">
             <h2>Sell Your Item</h2>
             <form method="POST" action="" enctype="multipart/form-data">
-                <div class="file-upload">
-
-                    <button class="file-upload-btn" type="button" id="addImageBtn" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
-
-                    <div class="file-upload-placeholder">
-                        <input class="file-upload-input" type='file' name="itemImage" onchange="readURL(this);" accept="image/*">
-                        <div class="drag-text">
-                            <h3>Drag and drop a file or select add Image</h3>
-                        </div>
-                    </div>
-
-                    <div class="file-upload-preview">
-                        <img class="file-upload-image" src="#" alt="your image" />
-                        <div class="file-upload-remove">
-                            <button type="button" onclick="removeUpload()" class="remove-image" id="removeImageBtn">Remove Uploaded Image</button>
-                        </div>
-                    </div>
-
-                </div>
-
                 <div class="mb-3">
                     <label for="Item_name" class="form-label">Item Name</label>
                     <input type="text" class="form-control" id="Item_name" name="Item_name" required>
@@ -372,6 +373,15 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
                         <option value="Very Bad">Very Bad</option>
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label for="end_time" class="form-label">End Time:</label>
+                    <input type="datetime-local" class="form-control" name="end_time" required>
+                </div>
+                <div class="mb-3">
+                    <label for="itemImages" class="form-label">Upload Images</label>
+                    <input type="file" class="form-control" id="itemImages" name="itemImages[]" multiple accept="image/*" onchange="previewImages()">
+                    <div class="preview-container" id="imagePreviewContainer"></div>
+                </div>
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
@@ -385,7 +395,24 @@ if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_
     ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+        function previewImages() {
+            const files = document.getElementById('itemImages').files;
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = ''; // Clear existing previews
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-image';
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
 
 </html>
 </body>

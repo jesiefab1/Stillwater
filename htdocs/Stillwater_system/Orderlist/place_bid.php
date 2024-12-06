@@ -8,6 +8,9 @@ if (!isset($_SESSION['Client_id'])) {
     exit;
 }
 
+// Initialize response array
+$response = array('message' => '', 'alert_type' => '');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the keys exist in the POST array
     if (isset($_POST['Bid_amount']) && isset($_POST['Item_number'])) {
@@ -23,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $itemNumber = intval($itemNumber);
         $askingPrice = floatval($askingPrice);
         if ($bidAmount <= 0 || $itemNumber <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid bid amount or item ID.']);
+            echo json_encode(['success' => false, 'message' => 'Invalid bid amount or item ID.', 'alert_type' => 'alert-danger']);
             exit;
         }
 
@@ -36,10 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $highestBid = $row['Highest_bid'] ?? 0; // Default to 0 if no bids exist
 
         // Check if the new bid is higher than the current highest bid
-        if ($bidAmount <= $highestBid) {
-            echo json_encode(['success' => false, 'message' => 'Your bid must be higher than the current highest bid of $' . number_format($highestBid, 2) . '.']);
+        if ($bidAmount < $highestBid || $bidAmount < $askingPrice) {
+            echo json_encode(['success' => false, 'message' => 'Your bid must be higher than the current highest bid of $' . number_format($highestBid, 2) . '.', 'alert_type' => 'alert-danger']);
             exit;
         }
+
 
         // Place the new bid
         $stmt->close(); // Close the previous statement before preparing a new one
@@ -47,23 +51,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("iidd", $itemNumber, $client_id, $bidAmount, $askingPrice); // Use "iis" for integer, integer, and string
 
         if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Bid placed successfully!']);
+            $response['alert_type'] = 'alert-success';
+            $response['message'] = 'You have SUCCESSFULLY bidded!';
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error placing bid. Please try again.']);
+            $response['alert_type'] = 'alert-danger';
+            $response['message'] = 'You have FAILED to bid . Please try again.';
         }
+        echo json_encode($response);
+        exit();
 
         // Close the statement
         $stmt->close();
     } else {
         // Handle the case where the expected keys are not set
-        echo json_encode(['success' => false, 'message' => 'Missing bid amount or item ID.']);
+        echo json_encode(['success' => false, 'message' => 'Missing bid amount or item ID.', 'alert_type' => 'alert-danger']);
         exit;
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
-    exit;
+    echo json_encode(['success' => false, 'message' => 'Invalid request.', 'alert_type' => 'alert-danger']);
+    exit();
 }
 
 // Close the database connection
 $conn->close();
-?>

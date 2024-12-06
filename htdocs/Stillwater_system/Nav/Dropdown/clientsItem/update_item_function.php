@@ -60,6 +60,26 @@ if (isset($_POST['Item_number'])) {
         echo json_encode($response);
         exit();
     }
+    // Handle file uploads
+    if (isset($_FILES['images'])) {
+        $uploadDir = '../../../Orderlist/';
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
+            $fileName = basename($_FILES['images']['name'][$key]);
+            $targetFile = $uploadDir . $fileName;
+
+            // Move the uploaded file to the target directory
+            if (move_uploaded_file($tmpName, $targetFile)) {
+                // Insert the file path into the database
+                $insertQuery = "INSERT INTO Uploads (Item_number, filepath) VALUES (?, ?)";
+                $insertStmt = $conn->prepare($insertQuery);
+                $insertStmt->bind_param("ss", $Item_number, $fileName);
+                $insertStmt->execute();
+            } else {
+                echo json_encode(['message' => 'Failed to upload image: ' . $fileName, 'alert_type' => 'alert-danger']);
+                exit();
+            }
+        }
+    }
 } else {
     $response['message'] = "Invalid request.";
     $response['alert_type'] = "alert-danger";

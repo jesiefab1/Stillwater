@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../db_connection.php';
+include ('../db_connection.php');
 
 if (isset($_SESSION['UserType'])) {
     $UserType = $_SESSION['UserType'];
@@ -47,15 +47,19 @@ if (isset($_SESSION['Client_id'])) {
         }
     </script>
     <style>
-    .hover-card {
-        transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for effects */
-    }
+        .hover-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            /* Smooth transition for effects */
+        }
 
-    .hover-card:hover {
-        transform: scale(1.05); /* Slightly enlarge the card */
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow effect */
-        border: 2px solid #007bff; /* Optional: add a border on hover */
-    }
+        .hover-card:hover {
+            transform: scale(1.05);
+            /* Slightly enlarge the card */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            /* Add shadow effect */
+            border: 2px solid #007bff;
+            /* Optional: add a border on hover */
+        }
     </style>
 </head>
 
@@ -63,7 +67,7 @@ if (isset($_SESSION['Client_id'])) {
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg fixed-top container-fluid">
         <div class="container px-4 px-lg-5">
-            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogo.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
+            <img src="https://github.com/jesiefab1/Stillwater/blob/main/htdocs/Images/companyLogoNew1.png?raw=true" id="companyLogo" class="img-fluid float-left" alt="Company Logo" style="width: 13%;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
@@ -71,16 +75,6 @@ if (isset($_SESSION['Client_id'])) {
                     <li class="nav-item"><a class="nav-link text-white-50" href="../Nav/aboutMe.php">About</a></li>
                 </ul>
                 <form class="d-flex mb-0">
-                    <div class="container">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item px-2 rounded">
                             <a href="../Orderlist/sell.php" class="btn btn-secondary rounded" role="button">
@@ -104,7 +98,6 @@ if (isset($_SESSION['Client_id'])) {
                                 <i class="bi bi-person-circle fs-5"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="../Nav/profile.php">Profile</a></li>
                                 <li><a class="dropdown-item" href="../Nav/Dropdown/storage.php">My Items</a></li>
                                 <li><a class="dropdown-item" href="../loginSystem/log_out.php">Logout</a></li>
                             </ul>
@@ -128,34 +121,63 @@ if (isset($_SESSION['Client_id'])) {
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 <?php
                 if (isset($_SESSION['Client_id'])) {
-                    $query = "SELECT * FROM Item WHERE Client_id != '$client_id' AND Is_sold = '0'";
+                    $query = "SELECT * FROM Item WHERE Client_id != $client_id AND Is_sold = 0";
                 } else {
-                    $query = "SELECT * FROM Item WHERE Is_sold = '0'";
+                    $query = "SELECT * FROM Item WHERE Is_sold = 0";
                 }
-
+                
+                echo "Query: " . $query . "<br>"; // Debugging line
                 $result = mysqli_query($conn, $query);
-
+                
                 if (!$result) {
                     die("Query failed: " . mysqli_error($conn));
                 }
-
+                
+                if (mysqli_num_rows($result) == 0) {
+                    echo "No items found.";
+                }
+                
+                
                 while ($row = mysqli_fetch_array($result)) {
                     // Initialize $imageSrc with a default image
                     $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
-
+                
                     // Fetch the image for the current item
                     $item_number = $row['Item_number'];
-                    $sqlImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'"; // Use quotes around $item_number
+                    $sqlImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'";
                     $queryImage = mysqli_query($conn, $sqlImage);
-
+                
                     if (!$queryImage) {
-                        echo "Error: " . mysqli_error($conn);
+                        echo "Error fetching images: " . mysqli_error($conn);
                         continue; // Skip this iteration if there's an error
                     }
-
+                
+                    // Fetch the highest bid from the Bids table
+                    $highestBidQuery = "SELECT MAX(Bid_amount) as Highest_bid FROM Bids WHERE Item_number = ?";
+                    $stmt = $conn->prepare($highestBidQuery);
+                
+                    if ($stmt === false) {
+                        die("Error preparing the statement: " . $conn->error);
+                    }
+                
+                    // Bind the parameter
+                    $stmt->bind_param("s", $item_number);
+                
+                    // Execute the query
+                    $stmt->execute();
+                
+                    // Get the result
+                    $highestBidResult = $stmt->get_result();
+                    $highestBidRow = $highestBidResult->fetch_assoc();
+                
+                    // Determine the highest bid or fallback to asking price
+                    $highestBid = isset($highestBidRow['Highest_bid']) ? $highestBidRow['Highest_bid'] : $row['Asking_price'];
+                
+                    // Close the statement
+                    $stmt->close();
+                
                     $imageRow = mysqli_fetch_assoc($queryImage);
-
-
+                
                     // Check if the image exists and is a valid path
                     if ($imageRow && !empty($imageRow['filepath'])) {
                         $localImagePath = '../Orderlist/' . $imageRow['filepath']; // Construct the local path
@@ -163,9 +185,7 @@ if (isset($_SESSION['Client_id'])) {
                             $imageSrc = $localImagePath; // Use the local image path if it exists
                         }
                     }
-
-
-
+                
                 ?>
                     <div class="col mb-5">
                         <a onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" style="cursor: pointer; text-decoration: none;">
@@ -174,7 +194,7 @@ if (isset($_SESSION['Client_id'])) {
                                 <div class="card-body p-3">
                                     <div class="text-center">
                                         <h5 class="fw-bolder" style="font-size: 1.1rem;"><?php echo htmlspecialchars($row['Item_name']); ?></h5>
-                                        <p class="text-danger" style="font-size: 1.2rem;"><?php echo '₱ ' . number_format($row['Asking_price'], 2); ?></p>
+                                        <p class="text-danger" style="font-size: 1.2rem;"><?php echo '₱ ' . number_format($highestBid, 2); ?></p>
                                     </div>
                                 </div>
                             </div>

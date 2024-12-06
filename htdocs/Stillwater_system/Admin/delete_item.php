@@ -16,7 +16,7 @@
         $Item_number = $_GET['Item_number'];
 
         // Prepare the DELETE statement
-        $stmt = $conn->prepare("DELETE FROM Item WHERE Item_number = ?");
+        $stmt = $conn->prepare("UPDATE Item SET Is_sold = '1' WHERE Item_number = ?");
         $stmt->bind_param("i", $Item_number);
 
         // Execute the statement
