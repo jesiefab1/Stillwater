@@ -1,6 +1,9 @@
 <?php
 session_start();
-include ('../db_connection.php');
+include('../db_connection.php');
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 if (isset($_SESSION['UserType'])) {
     $UserType = $_SESSION['UserType'];
@@ -121,63 +124,71 @@ if (isset($_SESSION['Client_id'])) {
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 <?php
                 if (isset($_SESSION['Client_id'])) {
-                    $query = "SELECT * FROM Item WHERE Client_id != $client_id AND Is_sold = 0";
+                    // Get current date and time
+                    $currentDateTime = date('Y-m-d H:i');
+                    $query = "SELECT * FROM Item
+                              WHERE Client_id != $client_id 
+                              AND Is_sold = 0 
+                              AND End_time > '$currentDateTime'";
                 } else {
-                    $query = "SELECT * FROM Item WHERE Is_sold = 0";
+                    // Get current date and time
+                    $currentDateTime = date('Y-m-d H:i');
+                    $query = "SELECT * FROM Item 
+                              WHERE Is_sold = 0
+                              AND End_time > '$currentDateTime'";
                 }
-                
-                echo "Query: " . $query . "<br>"; // Debugging line
+
                 $result = mysqli_query($conn, $query);
-                
+
                 if (!$result) {
                     die("Query failed: " . mysqli_error($conn));
                 }
-                
+
                 if (mysqli_num_rows($result) == 0) {
                     echo "No items found.";
                 }
-                
-                
+
+
                 while ($row = mysqli_fetch_array($result)) {
                     // Initialize $imageSrc with a default image
                     $imageSrc = 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'; // Default image
-                
+
                     // Fetch the image for the current item
                     $item_number = $row['Item_number'];
                     $sqlImage = "SELECT * FROM Uploads WHERE Item_number = '$item_number'";
                     $queryImage = mysqli_query($conn, $sqlImage);
-                
+
                     if (!$queryImage) {
                         echo "Error fetching images: " . mysqli_error($conn);
                         continue; // Skip this iteration if there's an error
                     }
-                
+
                     // Fetch the highest bid from the Bids table
                     $highestBidQuery = "SELECT MAX(Bid_amount) as Highest_bid FROM Bids WHERE Item_number = ?";
                     $stmt = $conn->prepare($highestBidQuery);
-                
+
                     if ($stmt === false) {
                         die("Error preparing the statement: " . $conn->error);
                     }
-                
+
                     // Bind the parameter
                     $stmt->bind_param("s", $item_number);
-                
+
                     // Execute the query
                     $stmt->execute();
-                
+
                     // Get the result
                     $highestBidResult = $stmt->get_result();
                     $highestBidRow = $highestBidResult->fetch_assoc();
-                
+
                     // Determine the highest bid or fallback to asking price
                     $highestBid = isset($highestBidRow['Highest_bid']) ? $highestBidRow['Highest_bid'] : $row['Asking_price'];
-                
+
                     // Close the statement
                     $stmt->close();
-                
+
                     $imageRow = mysqli_fetch_assoc($queryImage);
-                
+
                     // Check if the image exists and is a valid path
                     if ($imageRow && !empty($imageRow['filepath'])) {
                         $localImagePath = '../Orderlist/' . $imageRow['filepath']; // Construct the local path
@@ -185,7 +196,7 @@ if (isset($_SESSION['Client_id'])) {
                             $imageSrc = $localImagePath; // Use the local image path if it exists
                         }
                     }
-                
+
                 ?>
                     <div class="col mb-5">
                         <a onclick="openOrder('<?php echo addslashes($row['Item_number']); ?>', '<?php echo addslashes($row['Client_id']); ?>')" style="cursor: pointer; text-decoration: none;">

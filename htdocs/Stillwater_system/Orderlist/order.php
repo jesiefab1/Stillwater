@@ -20,8 +20,12 @@ $Item_number = null;
 $message = '';
 $alert_type = '';
 
+// Enable debugging (set to true during development, false in production)
+$debug = true;
+
 // Handle comment submission
-if (isset($_POST['commentSubmit']) && isset($_POST['comment'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['commentSubmit']) && isset($_POST['comment'])) {
+    // Sanitize and validate inputs
     $comment = mysqli_real_escape_string($conn, $_POST['comment']);
     $client_name = (empty($client_row['First_name']) && empty($client_row['Lastname'])) ?
         $client_row['Email'] :
@@ -29,20 +33,62 @@ if (isset($_POST['commentSubmit']) && isset($_POST['comment'])) {
     $full_comment = $client_name . ': ' . $comment;
     $date = date('Y-m-d H:i:s');
 
-    $query = "UPDATE Item 
-                SET Comments = CONCAT(COALESCE(Comments, ''), '\n', ?), 
-                    Date_of_comments = ? 
-                WHERE Item_number = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssi", $full_comment, $date, $Item_number);
+    // Debugging: Check processed inputs
+    if ($debug) {
+        error_log('Processed comment: ' . $full_comment);
+        error_log('Current timestamp: ' . $date);
+    }
 
-    if ($stmt->execute()) {
-        $message = 'Comment submitted successfully.';
-        $alert_type = 'alert-success';
+    // Ensure $Item_number is set and valid
+    if (!empty($Item_number)) {
+        $query = "UPDATE Item 
+                    SET Comments = CONCAT(COALESCE(Comments, ''), '\n', ?), 
+                        Date_of_comments = ? 
+                    WHERE Item_number = ?";
+        $stmt = $conn->prepare($query);
+
+        // Debugging: Check the query preparation
+        if (!$stmt) {
+            error_log('Statement preparation failed: ' . $conn->error);
+            $message = 'Failed to prepare query.';
+            $alert_type = 'alert-danger';
+        } else {
+            $stmt->bind_param("ssi", $full_comment, $date, $Item_number);
+
+            // Execute the query and handle errors
+            if ($stmt->execute()) {
+                $message = 'Comment submitted successfully.';
+                $alert_type = 'alert-success';
+
+                if ($debug) {
+                    error_log('Query executed successfully for Item_number: ' . $Item_number);
+                }
+            } else {
+                error_log('Query execution failed: ' . $stmt->error);
+                $message = 'Failed to submit comment: ' . $stmt->error;
+                $alert_type = 'alert-danger';
+            }
+
+            $stmt->close(); // Close the statement
+        }
     } else {
-        $message = 'Failed to submit comment.';
+        error_log('Invalid or missing Item_number.');
+        $message = 'Invalid Item number.';
         $alert_type = 'alert-danger';
     }
+} else {
+    // Debugging: Check for missing inputs
+    if ($debug) {
+        error_log('Invalid POST request. CommentSubmit: ' . (isset($_POST['commentSubmit']) ? 'set' : 'unset'));
+        error_log('Comment: ' . (isset($_POST['comment']) ? 'set' : 'unset'));
+    }
+    $message = 'Invalid request.';
+    $alert_type = 'alert-danger';
+}
+
+// Debugging: Output message (visible only in debug mode)
+if ($debug) {
+    echo '<div class="debug-message alert alert-info">' . htmlspecialchars($message) . '</div>';
 }
 
 // Check if Item_number and Client_id are set in the URL
@@ -134,7 +180,7 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
             if (!isLoggedIn) {
                 event.preventDefault(); // Prevent form submission
                 alert("You must be logged in to submit a comment."); // Alert the user
-                window.location.href = 'log_in.php'; // Redirect to the login page
+                window.location.href = '../loginSystem/log_in.php'; // Redirect to the login page
             }
         }
 
@@ -237,16 +283,74 @@ if (isset($_GET['Item_number'], $_GET['Client_id'])) {
                         <p id="notification" class="alert"></p>
                         <h4><?php echo htmlspecialchars($row['Item_name']); ?></h4>
                         <?php
-                            // Get current date and time
-                            $currentDateTime = date('Y-m-d H:i:s');
-                            $endTime = $row['End_time'];
-                            if ($currentDateTime < $row['End_time']) {
-                                echo "Auction End Time:" . $endTime;
-                            } else {
-                                echo "Auction is Closed";
-                                $query = "UPDATE Item SET Is_sold = 1";
-                                $sql = mysqli_query($conn, $query);
+                        // Get current date and time
+                        date_default_timezone_set('Asia/Manila');
+                        $currentDateTime = date('Y-m-d H:i');
+                        $endTime = $row['End_time'];
+
+                        if ($currentDateTime < $endTime) {
+                            echo "Auction End Time: " . $endTime;
+                        } else {
+                            echo "Auction is Closed";
+                            if (is_array($highestBidRow)) {
+                                // If it's an array, you might want to get the maximum bid or handle it accordingly
+                                $highestBidRow = max($highestBidRow); // Example: Get the maximum value from the array
                             }
+
+                            if (!empty($highestBidRow)) {
+
+                                // Update the item to mark it as sold
+                                $query = "UPDATE Item SET Is_sold = 1 WHERE Item_number = '$Item_number'"; // Ensure you specify which item to update
+                                $sql = mysqli_query($conn, $query);
+                                if (!$sql) {
+                                    echo "Error updating Item: " . mysqli_error($conn);
+                                    exit; // Stop execution if the update fails
+                                }
+
+                                // Get the client buyer based on the highest bid
+                                $ClientBuyerQuery = "SELECT * FROM Bids WHERE Item_number = $Item_number AND Bid_amount = $highestBidRow";
+                                $ClientBuyerSQL = mysqli_query($conn, $ClientBuyerQuery);
+                                if (!$ClientBuyerSQL) {
+                                    echo "Error fetching Client Buyer: " . mysqli_error($conn);
+                                    exit; // Stop execution if the query fails
+                                }
+
+                                $ClientBuyerRow = mysqli_fetch_assoc($ClientBuyerSQL);
+                                if (!$ClientBuyerRow) {
+                                    echo "No buyer found for the highest bid.";
+                                    exit; // Stop execution if no buyer is found
+                                }
+
+                                $ClientBuyer = $ClientBuyerRow['Client_id'];
+                                $itemCondition = $row['Condition'];
+
+                                // Insert into Purchases table
+                                $purchasesQuery = "INSERT INTO Purchases (Item_number, Client_id, Purchase_cost, Date_purchased, Condition_at_purchased) VALUES ('$Item_number', '$ClientBuyer', '$highestBidRow', '$endTime', '$itemCondition')";
+                                $purchasesResult = mysqli_query($conn, $purchasesQuery);
+
+                                if ($purchasesResult) {
+                                    echo "<script>alert('Purchase added successfully!');</script>";
+                                } else {
+                                    echo "Error inserting into Purchases: " . mysqli_error($conn);
+                                    exit; // Stop execution if the insert fails
+                                }
+
+                                // Calculate commission and sales tax
+                                $commissionPaid = 0.004 * $highestBidRow;
+                                $actualPrice = $row['Asking_price'];
+                                $salesTax = 0.12;
+
+                                // Insert into Sales table
+                                $salesQuery = "INSERT INTO Sales (Item_number, Client_id, Commission_paid, `Selling_price`, Sales_tax, Date_sold) VALUES ('$Item_number', '$ClientBuyer', '$commissionPaid', '$actualPrice', '$salesTax', '$endTime')";
+                                $salesResult = mysqli_query($conn, $salesQuery);
+
+                                if ($salesResult) {
+                                    echo "<script>alert('Sale added successfully!');</script>";
+                                } else {
+                                    echo "Error inserting into Sales: " . mysqli_error($conn);
+                                }
+                            }
+                        }
                         ?>
                         <p>Condition: <?php echo $row['Condition'] ?></p>
                         <p>Current highest bid: ₱ <?php echo number_format($highestBid, 2); ?></p>
